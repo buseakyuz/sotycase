@@ -49,7 +49,6 @@ class _TransactionTile extends StatefulWidget {
     required this.transaction,
     this.isFirst = false,
     this.isLast = false,
-    super.key,
   });
 
   @override
