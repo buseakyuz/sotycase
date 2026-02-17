@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sotycase/features/auth/view/login_view.dart';
 import 'package:sotycase/features/auth/view/otp_view.dart';
 import 'package:sotycase/features/auth/view/welcome_view.dart';
+import 'package:sotycase/features/store/view/payment_view.dart';
+import 'package:sotycase/features/store/view/store_view.dart';
 import 'package:sotycase/features/wallet/view/wallet_view.dart';
 import '../../product/services/auth_provider.dart';
 
@@ -37,10 +39,10 @@ GoRouter router(Ref ref) {
       GoRoute(path: '/login', builder: (context, state) => const LoginView()),
       GoRoute(path: '/otp', builder: (context, state) => const OtpView()),
       GoRoute(path: '/wallet', builder: (context, state) => const WalletView()),
+      GoRoute(path: '/store', builder: (context, state) => const StoreView()),
       GoRoute(
-        path: '/store',
-        builder: (context, state) =>
-            const Scaffold(body: Center(child: Text('Store View'))),
+        path: '/payment',
+        builder: (context, state) => const PaymentView(),
       ),
     ],
   );

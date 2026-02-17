@@ -10,7 +10,6 @@ class QuickActionButtons extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       child: Column(
         children: [
-          // Üst Sıra: Online ve Mağaza Butonları
           Row(
             children: [
               Expanded(
@@ -35,7 +34,7 @@ class QuickActionButtons extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 16),
-          // Alt Sıra: SeçilStore Marka Sayfası Kartı
+
           const _BrandPromotionCard(),
         ],
       ),
@@ -49,7 +48,9 @@ class _BrandPromotionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {}, // Marka sayfası yönlendirmesi buraya
+      onTap: () {
+        context.go('/store');
+      },
       borderRadius: BorderRadius.circular(16),
       child: Container(
         padding: const EdgeInsets.all(12),
@@ -73,7 +74,7 @@ class _BrandPromotionCard extends StatelessWidget {
               fit: BoxFit.contain,
             ),
             const SizedBox(width: 12),
-            // Metin Alanı
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,7 +94,6 @@ class _BrandPromotionCard extends StatelessWidget {
                 ],
               ),
             ),
-            // Ok İkonu
             Icon(Icons.chevron_right, color: Colors.grey.shade400),
           ],
         ),

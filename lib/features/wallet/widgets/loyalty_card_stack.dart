@@ -11,9 +11,9 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
   final List<String> _cardImages = [
+    'assets/card/GoldCard.png',
     'assets/card/BronzCard.png',
     'assets/card/SilverCard.png',
-    'assets/card/GoldCard.png',
   ];
 
   late AnimationController _controller;
