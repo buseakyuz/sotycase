@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sotycase/product/constants/soty_colors.dart';
 
 class QuickActionButtons extends StatelessWidget {
   const QuickActionButtons({super.key});

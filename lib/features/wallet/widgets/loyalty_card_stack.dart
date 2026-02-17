@@ -18,7 +18,6 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
 
   late AnimationController _controller;
   late Animation<double> _animation;
-  bool _isMovingForward = true;
 
   @override
   void initState() {
@@ -40,7 +39,6 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
     if (_controller.isAnimating) return;
 
     setState(() {
-      _isMovingForward = true;
       _controller.forward(from: 0).then((_) {
         setState(() {
           _currentIndex = (_currentIndex + 1) % _cardImages.length;

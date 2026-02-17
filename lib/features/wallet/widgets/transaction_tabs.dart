@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:sotycase/product/constants/soty_colors.dart';
+import '../../../../product/constants/soty_colors.dart';
 
 class TransactionTabs extends StatefulWidget {
-  const TransactionTabs({super.key});
+  final Function(int) onChanged;
+  const TransactionTabs({super.key, required this.onChanged});
 
   @override
   State<TransactionTabs> createState() => _TransactionTabsState();
@@ -10,46 +11,67 @@ class TransactionTabs extends StatefulWidget {
 
 class _TransactionTabsState extends State<TransactionTabs> {
   int _selectedIndex = 0;
-  final List<String> _tabs = ['Tümü', 'Bekleyen', 'Kazandıklarım', 'Harcadıklarım'];
+  final List<String> _tabs = [
+    'Tümü',
+    'Bekleyen',
+    'Kazandıklarım',
+    'Harcadıklarım',
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
-      margin: const EdgeInsets.symmetric(vertical: 24),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        itemCount: _tabs.length,
-        itemBuilder: (context, index) {
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+      padding: const EdgeInsets.all(6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Row(
+        children: List.generate(_tabs.length, (index) {
           final isSelected = _selectedIndex == index;
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: InkWell(
-              onTap: () => setState(() => _selectedIndex = index),
-              borderRadius: BorderRadius.circular(20),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                alignment: Alignment.center,
+          return Expanded(
+            child: GestureDetector(
+              onTap: () {
+                setState(() => _selectedIndex = index);
+                widget.onChanged(index);
+              },
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 250),
+                padding: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: isSelected ? SotyColors.primary : Colors.white,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                    color: isSelected ? SotyColors.primary : Colors.grey.shade300,
-                  ),
+                  color: isSelected ? Colors.white : Colors.transparent,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: isSelected
+                      ? [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.1),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : [],
                 ),
                 child: Text(
                   _tabs[index],
+                  textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: isSelected ? Colors.white : Colors.grey.shade600,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                    color: isSelected ? SotyColors.primary : Colors.grey,
                   ),
                 ),
               ),
             ),
           );
-        },
+        }),
       ),
     );
   }

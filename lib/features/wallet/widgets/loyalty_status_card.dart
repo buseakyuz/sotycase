@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sotycase/product/constants/soty_colors.dart';
+import '../../../../product/constants/soty_colors.dart';
 
 class LoyaltyStatusCard extends StatelessWidget {
   const LoyaltyStatusCard({super.key});
@@ -7,14 +7,15 @@ class LoyaltyStatusCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 24),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey.shade200),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -26,68 +27,118 @@ class LoyaltyStatusCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
+              const Text(
+                'Sadakat Seviyen:',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              Row(
+                children: const [
+                  Icon(
+                    Icons.emoji_events_outlined,
+                    color: Colors.orange,
+                    size: 20,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
                     'Bronz Üye',
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                      color: SotyColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Güncel Harcama',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2D3748),
                     ),
                   ),
                 ],
               ),
-              const Text(
-                '1.100 ₺',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: SotyColors.primary,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          // Custom Progress Bar
-          Stack(
-            children: [
-              Container(
-                height: 8,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              FractionallySizedBox(
-                widthFactor: 0.15, // Mock progress
-                child: Container(
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: SotyColors.primary,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
             ],
           ),
           const SizedBox(height: 12),
+          const Divider(height: 1, color: SotyColors.primary),
+          const SizedBox(height: 16),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _MilestoneLabel(label: '1.000', isReached: true),
-              _MilestoneLabel(label: '5.000', isReached: false),
-              _MilestoneLabel(label: '100.000', isReached: false),
+              _buildInfoColumn(
+                'Son Gün',
+                '31 ARALIK',
+                icon: Icons.access_time_filled,
+              ),
+              _buildInfoColumn('Harcanan TL', '1.100 ₺', isBoldValue: true),
             ],
+          ),
+          const SizedBox(height: 24),
+
+          const _LoyaltyProgressBar(),
+          const SizedBox(height: 24),
+
+          const Text(
+            'Seviye 2 sadakat kartının sunduğu ayrıcalıklar;',
+            style: TextStyle(
+              color: SotyColors.primary,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          _buildDetailRow('Avantaj:', '%5 indirim'),
+          const SizedBox(height: 8),
+          _buildDetailRow(
+            'Yükselme Kriteri:',
+            'Her ₺500 alışverişte ₺20 kupon',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoColumn(
+    String label,
+    String value, {
+    IconData? icon,
+    bool isBoldValue = false,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            if (icon != null) ...[
+              Icon(icon, size: 14, color: SotyColors.primary),
+              const SizedBox(width: 4),
+            ],
+            Text(
+              label,
+              style: TextStyle(fontSize: 11, color: Colors.grey.shade500),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isBoldValue ? FontWeight.bold : FontWeight.w800,
+            color: const Color(0xFF2D3748),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String title, String desc) {
+    return RichText(
+      text: TextSpan(
+        style: const TextStyle(fontSize: 12, color: Color(0xFF4A5568)),
+        children: [
+          TextSpan(text: '$title '),
+          TextSpan(
+            text: desc,
+            style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -95,30 +146,92 @@ class LoyaltyStatusCard extends StatelessWidget {
   }
 }
 
-class _MilestoneLabel extends StatelessWidget {
-  final String label;
-  final bool isReached;
-
-  const _MilestoneLabel({required this.label, required this.isReached});
+class _LoyaltyProgressBar extends StatelessWidget {
+  const _LoyaltyProgressBar();
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            Container(
+              height: 6,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+
+            FractionallySizedBox(
+              alignment: Alignment.centerLeft,
+              widthFactor: 0.25,
+              child: Container(
+                height: 6,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF4A5568),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildStep(isActive: true, isReached: true),
+                _buildStep(isActive: false, isReached: false),
+                _buildStep(isActive: false, isReached: false),
+              ],
+            ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // Seviye Metinleri
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            _buildStepText('0', ''),
+            _buildStepText('1.000 ₺', '(Seviye 2)'),
+            _buildStepText('5.000 ₺', '(Seviye 3)'),
+            _buildStepText('100.000 ₺', '(Seviye 4)'),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStep({required bool isActive, required bool isReached}) {
+    return Container(
+      width: 24,
+      height: 24,
+      decoration: BoxDecoration(
+        color: isReached ? const Color(0xFF68D391) : Colors.grey.shade300,
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: isReached
+          ? const Icon(Icons.check, size: 14, color: Colors.white)
+          : null,
+    );
+  }
+
+  Widget _buildStepText(String amount, String level) {
+    return Column(
+      children: [
         Text(
-          label,
-          style: TextStyle(
-            fontSize: 10,
+          amount,
+          style: const TextStyle(
+            fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: isReached ? SotyColors.primary : Colors.grey.shade400,
+            color: Color(0xFF2D3748),
           ),
         ),
-        const SizedBox(height: 4),
-        Container(
-          width: 2,
-          height: 4,
-          color: isReached ? SotyColors.primary : Colors.grey.shade300,
-        ),
+        if (level.isNotEmpty)
+          Text(
+            level,
+            style: TextStyle(fontSize: 10, color: Colors.grey.shade500),
+          ),
       ],
     );
   }
