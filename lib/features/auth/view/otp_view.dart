@@ -125,12 +125,8 @@ class _OtpViewState extends ConsumerState<OtpView> {
                         final success = await authNotifier.verifyCode(
                           _pinController.text,
                         );
-                        if (success) {
-                          await ref
-                              .read(authProvider.notifier)
-                              .verifyCode(_pinController.text);
-
-                          if (mounted) context.go('/wallet');
+                        if (success && mounted) {
+                          context.go('/wallet');
                         }
                       }
                     : null,

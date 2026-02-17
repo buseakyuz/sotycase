@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sotycase/core/navigation/app_router.dart';
+import 'package:sotycase/product/navigation/app_router.dart';
 import 'package:sotycase/product/constants/product_constants.dart';
 import 'package:sotycase/product/init/application_init.dart';
 import 'package:sotycase/product/theme/theme_provider.dart';

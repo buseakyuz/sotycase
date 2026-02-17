@@ -5,7 +5,9 @@ import 'package:sotycase/features/auth/view/login_view.dart';
 import 'package:sotycase/features/auth/view/otp_view.dart';
 import 'package:sotycase/features/auth/view/welcome_view.dart';
 import 'package:sotycase/features/wallet/view/wallet_view.dart';
-import '../../product/services/auth_provider.dart';
+import '../services/auth_provider.dart';
+
+part 'app_router.g.dart';
 
 @riverpod
 GoRouter router(Ref ref) {

@@ -18,7 +18,7 @@ class WelcomeView extends ConsumerWidget {
           const SotyWaveBackground(),
           SafeArea(
             child: Padding(
-              padding: LayoutConstants.centralAllPadding,
+              padding: LayoutConstants.highAllPadding,
               child: Column(
                 children: [
                   Spacer(flex: 2),
@@ -26,7 +26,7 @@ class WelcomeView extends ConsumerWidget {
                   Spacer(flex: 1),
                   CustomRectangleButton(
                     text: "Giriş Yap",
-                    onTap: () => context.go('/login'),
+                    onTap: () => context.push('/login'),
                     borderColor: SotyColors.primary,
                   ),
                   Spacer(flex: 6),

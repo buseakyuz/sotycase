@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sotycase/features/auth/providers/auth_state.dart';
+import 'package:sotycase/product/services/auth_provider.dart';
 
 part 'auth_notifier.g.dart';
 
@@ -53,7 +54,10 @@ class Auth extends _$Auth {
     if (code == '111111') {
       state = state.copyWith(isLoading: false);
       _timer?.cancel();
-      // Here you would also update the main AuthenticationNotifier
+      
+      // Update global authentication state
+      await ref.read(authenticationProvider.notifier).verifyOtp(code);
+
       return true;
     } else {
       state = state.copyWith(isLoading: false, errorMessage: 'Hatalı kod');
@@ -66,4 +70,3 @@ class Auth extends _$Auth {
     _startTimer();
   }
 }
-
