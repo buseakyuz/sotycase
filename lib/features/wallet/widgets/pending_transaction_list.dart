@@ -1,8 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:sotycase/product/constants/soty_colors.dart';
 import '../providers/pending_transaction_provider.dart';
 import '../models/pending_transaction_model.dart';
@@ -17,20 +15,40 @@ class PendingTransactionList extends ConsumerWidget {
     if (pendingTransactions.isEmpty) {
       return const _EmptyState();
     }
-
     return Column(
       children: [
         const _OnlineApprovalInfo(),
-        ListView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-          itemCount: pendingTransactions.length,
-          itemBuilder: (context, index) {
-            return _PendingTransactionCard(
-              transaction: pendingTransactions[index],
-            );
-          },
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.04),
+                blurRadius: 15,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: pendingTransactions.length,
+            separatorBuilder: (context, index) => Divider(
+              height: 1,
+              indent: 70,
+              endIndent: 16,
+              color: Colors.grey.shade100,
+            ),
+            itemBuilder: (context, index) {
+              return _PendingTransactionTile(
+                transaction: pendingTransactions[index],
+                isFirst: index == 0,
+                isLast: index == pendingTransactions.length - 1,
+              );
+            },
+          ),
         ),
       ],
     );
@@ -43,24 +61,191 @@ class _OnlineApprovalInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      padding: const EdgeInsets.all(12),
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFF7F8FA),
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.shade200, width: 0.5),
+        ),
       ),
-      child: Row(
+      child: Column(
         children: [
-          Icon(Icons.info_outline, color: Colors.grey.shade600, size: 20),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Online Sepet Onaylama Süresi: 30 Gün',
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+          const Text(
+            'Online Sepet Onaylama Süresi',
+            style: TextStyle(fontSize: 13, color: Color(0xFF718096)),
+          ),
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Icon(Icons.access_time, size: 16, color: SotyColors.primary),
+              SizedBox(width: 6),
+              Text(
+                '30 Gün',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: SotyColors.primary,
+                ),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PendingTransactionTile extends StatefulWidget {
+  final PendingTransactionModel transaction;
+  final bool isFirst;
+  final bool isLast;
+
+  const _PendingTransactionTile({
+    required this.transaction,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  @override
+  State<_PendingTransactionTile> createState() =>
+      _PendingTransactionTileState();
+}
+
+class _PendingTransactionTileState extends State<_PendingTransactionTile> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ListTile(
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FA),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.shopping_cart_outlined,
+              color: Color(0xFFA0AEC0),
+              size: 24,
+            ),
+          ),
+          title: Row(
+            children: [
+              // ÇÖZÜM: Flexible veya Expanded kullanarak metnin taşmasını önle
+              Flexible(
+                child: Text(
+                  widget.transaction.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Color(0xFF2D3748),
+                  ),
+                  overflow: TextOverflow.ellipsis, // Çok uzunsa '...' koyar
+                  maxLines: 1,
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.info_outline,
+                size: 14,
+                color: Color(0xFFCBD5E0),
+              ),
+            ],
+          ),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _CountdownTimer(expiryDate: widget.transaction.expiryDate),
+              Text(
+                'Sipariş No: ${widget.transaction.orderNo}',
+                style: const TextStyle(fontSize: 10, color: Color(0xFFCBD5E0)),
+              ),
+            ],
+          ),
+          trailing: Row(
+            mainAxisSize:
+                MainAxisSize.min, // Sağ tarafın genişliğini minimize et
+            children: [
+              Text(
+                '+${widget.transaction.amount.toInt()}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Color(0xFFED8936),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(
+                _isExpanded
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                color: const Color(0xFFCBD5E0),
+              ),
+            ],
+          ),
+        ),
+        if (_isExpanded)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(left: 70, right: 16, bottom: 16),
+            child: Column(
+              children: [
+                _buildDetailRow('İlk Alışveriş Kazanımı', '+200'),
+                _buildDetailRow(
+                  'Bahar Coşkusuyla',
+                  '+300',
+                  subTitle: 'X Alışverişe Y Soty Coin',
+                ),
+                _buildDetailRow('Coin Yağmuru', '+100', subTitle: '% Coin'),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String title, String amount, {String? subTitle}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              if (subTitle != null)
+                Text(
+                  subTitle,
+                  style: const TextStyle(
+                    fontSize: 10,
+                    color: Color(0xFFA0AEC0),
+                  ),
+                ),
+            ],
+          ),
+          Text(
+            amount,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFED8936),
             ),
           ),
         ],
@@ -69,104 +254,8 @@ class _OnlineApprovalInfo extends StatelessWidget {
   }
 }
 
-class _PendingTransactionCard extends StatelessWidget {
-  final PendingTransactionModel transaction;
-
-  const _PendingTransactionCard({required this.transaction});
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => context.push('/transaction-detail', extra: transaction),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.orange.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.orange,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        transaction.title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: Color(0xFF2D3748),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        'Sipariş No: ${transaction.orderNo}',
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: Colors.grey.shade500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '+${transaction.amount.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: Colors.orange,
-                  ),
-                ),
-              ],
-            ),
-            const Divider(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'Kalan Süre',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF718096),
-                  ),
-                ),
-                _CountdownTimer(expiryDate: transaction.expiryDate),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _CountdownTimer extends StatefulWidget {
   final DateTime expiryDate;
-
   const _CountdownTimer({required this.expiryDate});
 
   @override
@@ -175,17 +264,13 @@ class _CountdownTimer extends StatefulWidget {
 
 class _CountdownTimerState extends State<_CountdownTimer> {
   late Timer _timer;
-  late Duration _remainingDuration;
 
   @override
   void initState() {
     super.initState();
-    _remainingDuration = widget.expiryDate.difference(DateTime.now());
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
-        setState(() {
-          _remainingDuration = widget.expiryDate.difference(DateTime.now());
-        });
+        setState(() {});
       }
     });
   }
@@ -198,22 +283,11 @@ class _CountdownTimerState extends State<_CountdownTimer> {
 
   @override
   Widget build(BuildContext context) {
-    if (_remainingDuration.isNegative) {
-      return const Text('Süresi Doldu', style: TextStyle(color: Colors.red));
-    }
-
-    final days = _remainingDuration.inDays;
-    final hours = _remainingDuration.inHours % 24;
-    final minutes = _remainingDuration.inMinutes % 60;
-    final seconds = _remainingDuration.inSeconds % 60;
-
+    final dateStr =
+        "${widget.expiryDate.day}.${widget.expiryDate.month < 10 ? '0' : ''}${widget.expiryDate.month}.${widget.expiryDate.year}";
     return Text(
-      '${days}g ${hours}s ${minutes}d ${seconds}sn',
-      style: const TextStyle(
-        fontSize: 12,
-        fontWeight: FontWeight.bold,
-        color: SotyColors.primary,
-      ),
+      'Tahmini Kalan Gün $dateStr',
+      style: const TextStyle(fontSize: 11, color: Color(0xFFA0AEC0)),
     );
   }
 }
@@ -223,12 +297,12 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 40),
-      child: Center(
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 50),
         child: Text(
           'Bekleyen işleminiz bulunmamaktadır.',
-          style: TextStyle(color: Colors.grey, fontSize: 14),
+          style: TextStyle(color: Color(0xFFA0AEC0)),
         ),
       ),
     );

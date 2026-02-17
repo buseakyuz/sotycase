@@ -1,10 +1,21 @@
 import 'package:flutter/material.dart';
 
 class TransactionHistoryList extends StatelessWidget {
-  const TransactionHistoryList({super.key});
+  final int selectedIndex;
+  const TransactionHistoryList({super.key, this.selectedIndex = 0});
 
   @override
   Widget build(BuildContext context) {
+    final filteredTransactions = _mockTransactions.where((t) {
+      if (selectedIndex == 2) return t.amount > 0; // Kazandıklarım
+      if (selectedIndex == 3) return t.amount < 0; // Harcadıklarım
+      return true; // Tümü
+    }).toList();
+
+    if (filteredTransactions.isEmpty) {
+      return const _EmptyState();
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
@@ -12,7 +23,7 @@ class TransactionHistoryList extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.04),
+            color: Colors.black.withValues(alpha: 0.04),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -21,7 +32,7 @@ class TransactionHistoryList extends StatelessWidget {
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: _mockTransactions.length,
+        itemCount: filteredTransactions.length,
         separatorBuilder: (context, index) => Divider(
           height: 1,
           indent: 70,
@@ -30,11 +41,28 @@ class TransactionHistoryList extends StatelessWidget {
         ),
         itemBuilder: (context, index) {
           return _TransactionTile(
-            transaction: _mockTransactions[index],
+            transaction: filteredTransactions[index],
             isFirst: index == 0,
-            isLast: index == _mockTransactions.length - 1,
+            isLast: index == filteredTransactions.length - 1,
           );
         },
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 50),
+        child: Text(
+          'İşlem bulunmamaktadır.',
+          style: TextStyle(color: Color(0xFFA0AEC0)),
+        ),
       ),
     );
   }
@@ -147,7 +175,6 @@ class _TransactionTileState extends State<_TransactionTile> {
             ),
           ),
 
-          // --- AYRINTI PANELİ (Tıklandığında Açılan Kısım) ---
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: Container(

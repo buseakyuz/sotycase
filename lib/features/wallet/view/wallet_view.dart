@@ -49,7 +49,7 @@ class _WalletViewState extends State<WalletView> {
       case 1: // Bekleyen
         return const PendingTransactionList();
       default:
-        return const TransactionHistoryList();
+        return TransactionHistoryList(selectedIndex: _selectedTab);
     }
   }
 }
