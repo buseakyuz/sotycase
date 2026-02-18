@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../../../product/models/wallet/wallet_summary_model.dart';
 
 class QuickActionButtons extends StatelessWidget {
-  const QuickActionButtons({super.key});
+  final WalletSummaryModel? summary;
+  const QuickActionButtons({super.key, this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class QuickActionButtons extends StatelessWidget {
                   icon: Icons.language_outlined,
                   title: 'Online',
                   boldTitle: 'Alışveriş',
-                  campaignCount: 8,
+                  campaignCount: summary?.onlineCampaignCount ?? 0,
                   onTap: () {},
                 ),
               ),
@@ -27,7 +29,7 @@ class QuickActionButtons extends StatelessWidget {
                   icon: Icons.store_outlined,
                   title: 'Mağaza',
                   boldTitle: 'Alışverişi',
-                  campaignCount: 12,
+                  campaignCount: summary?.storeCampaignCount ?? 0,
                   onTap: () => context.go('/store'),
                 ),
               ),
@@ -35,7 +37,7 @@ class QuickActionButtons extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          const _BrandPromotionCard(),
+          _BrandPromotionCard(summary: summary),
         ],
       ),
     );
@@ -43,7 +45,8 @@ class QuickActionButtons extends StatelessWidget {
 }
 
 class _BrandPromotionCard extends StatelessWidget {
-  const _BrandPromotionCard();
+  final WalletSummaryModel? summary;
+  const _BrandPromotionCard({this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -68,27 +71,32 @@ class _BrandPromotionCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Image.asset(
-              'assets/logo/secilstore.png',
-              height: 42,
-              fit: BoxFit.contain,
-            ),
+            if (summary?.brandLogo != null)
+              Image.network(
+                summary!.brandLogo!,
+                height: 42,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.business, size: 42, color: Colors.grey),
+              )
+            else
+              const Icon(Icons.business, size: 42, color: Colors.grey),
             const SizedBox(width: 12),
 
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'SeçilStore Marka Sayfası',
-                    style: TextStyle(
+                  Text(
+                    '${summary?.brandName ?? 'Marka'} Sayfası',
+                    style: const TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2D3748),
                     ),
                   ),
                   Text(
-                    'SeçilStore kampanyalarını keşfet',
+                    '${summary?.brandName ?? 'Marka'} kampanyalarını keşfet',
                     style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                   ),
                 ],

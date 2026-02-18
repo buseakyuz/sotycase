@@ -66,12 +66,12 @@ class LoyaltyStatusCard extends StatelessWidget {
             children: [
               _buildInfoColumn(
                 'Kullanılabilir Coin',
-                '${summary?.usableBalance?.toInt() ?? 0}',
+                '${summary?.usableBalance.toInt() ?? 0}',
                 icon: Icons.monetization_on_outlined,
               ),
               _buildInfoColumn(
                 'Toplam Coin',
-                '${summary?.totalBalance?.toInt() ?? 0}',
+                '${summary?.totalBalance.toInt() ?? 0}',
                 isBoldValue: true,
               ),
             ],

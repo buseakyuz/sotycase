@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'wallet_service.dart';
+part of 'campaign_service.dart';
 
 // dart format off
 
@@ -10,8 +10,8 @@ part of 'wallet_service.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations,unused_element_parameter,avoid_unused_constructor_parameters,unreachable_from_main
 
-class _WalletService implements WalletService {
-  _WalletService(this._dio, {this.baseUrl, this.errorLogger});
+class _CampaignService implements CampaignService {
+  _CampaignService(this._dio, {this.baseUrl, this.errorLogger});
 
   final Dio _dio;
 
@@ -20,29 +20,40 @@ class _WalletService implements WalletService {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<BaseResponse<WalletSummaryModel>> getWalletSummary(
+  Future<BaseResponse<dynamic>> getActiveCampaign(
     String brandId,
+    bool isAllUsers,
+    int channelType,
+    int pageNumber,
+    int pageSize,
+    int sortDirection,
   ) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'IsAllUsers': isAllUsers,
+      r'ChannelType': channelType,
+      r'PageNumber': pageNumber,
+      r'PageSize': pageSize,
+      r'SortDirection': sortDirection,
+    };
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BaseResponse<WalletSummaryModel>>(
+    final _options = _setStreamType<BaseResponse<dynamic>>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'Wallet/Brands/${brandId}/Summary',
+            'Campaign/GetActiveCampaign/${brandId}',
             queryParameters: queryParameters,
             data: _data,
           )
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<WalletSummaryModel> _value;
+    late BaseResponse<dynamic> _value;
     try {
-      _value = BaseResponse<WalletSummaryModel>.fromJson(
+      _value = BaseResponse<dynamic>.fromJson(
         _result.data!,
-        (json) => WalletSummaryModel.fromJson(json as Map<String, dynamic>),
+        (json) => json as dynamic,
       );
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
@@ -52,48 +63,7 @@ class _WalletService implements WalletService {
   }
 
   @override
-  Future<BaseResponse<List<WalletTransactionModel>>> getTransactions(
-    String brandId,
-    int filterType,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'FilterType': filterType};
-    final _headers = <String, dynamic>{};
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<BaseResponse<List<WalletTransactionModel>>>(
-      Options(method: 'GET', headers: _headers, extra: _extra)
-          .compose(
-            _dio.options,
-            'Wallet/Brands/${brandId}/Transactions',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late BaseResponse<List<WalletTransactionModel>> _value;
-    try {
-      _value = BaseResponse<List<WalletTransactionModel>>.fromJson(
-        _result.data!,
-        (json) => json is List<dynamic>
-            ? json
-                  .map<WalletTransactionModel>(
-                    (i) => WalletTransactionModel.fromJson(
-                      i as Map<String, dynamic>,
-                    ),
-                  )
-                  .toList()
-            : List.empty(),
-      );
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<BaseResponse<dynamic>> getWaitingRewardCoin(
+  Future<BaseResponse<dynamic>> generatePaymentQrCode(
     Map<String, dynamic> body,
   ) async {
     final _extra = <String, dynamic>{};
@@ -105,7 +75,7 @@ class _WalletService implements WalletService {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            'Sotier/GetWaitingRewardCoin',
+            'Campaign/GeneratePaymentQrCodeWithSotyCoinsAndCampaigns',
             queryParameters: queryParameters,
             data: _data,
           )

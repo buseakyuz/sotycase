@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'dart:developer' as developer;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../../product/cache/secure_storage_manager.dart';
-import '../../../../product/models/base/base_response.dart';
 import '../../../../product/network/network_provider.dart';
 import '../../../../product/network/services/auth/auth_service.dart';
 import '../models/auth_result.dart';
@@ -42,16 +41,21 @@ class AuthRepository {
 
   Future<AuthResult> verifyOtp(String phoneNumber, String otpCode) async {
     try {
-      final response = await _authService.verifyOtp({
-        'phoneNumber': phoneNumber,
-        'code': otpCode,
+      final response = await _authService.signIn({
+        'identifier': phoneNumber,
+        'verificationCode': otpCode,
+        'userName': '',
       });
 
       final rawCode = response.metaData?.responseCode?.toString();
-      
-      if (rawCode == '200' && response.responseData != null) {
-        final tokenData = TokenModel.fromJson(response.responseData as Map<String, dynamic>);
-        
+      developer.log('AuthRepository: verifyOtp rawCode: $rawCode');
+      developer.log('AuthRepository: verifyOtp hasData: ${response.responseData != null}');
+
+      if ((rawCode == '200' || rawCode == '202') && response.responseData != null) {
+        final tokenData = TokenModel.fromJson(
+          response.responseData as Map<String, dynamic>,
+        );
+
         if (tokenData.accessToken != null && tokenData.refreshToken != null) {
           await SecureStorageManager.instance.saveTokens(
             accessToken: tokenData.accessToken!,
@@ -62,6 +66,7 @@ class AuthRepository {
       }
       return AuthResult.failure;
     } catch (e) {
+      developer.log('AuthRepository: verifyOtp error: $e');
       return AuthResult.failure;
     }
   }

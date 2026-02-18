@@ -10,7 +10,4 @@ abstract class AuthService {
 
   @POST("Auth/SignIn")
   Future<BaseResponse<dynamic>> signIn(@Body() Map<String, dynamic> body);
-
-  @POST("Auth/Verify")
-  Future<BaseResponse<dynamic>> verifyOtp(@Body() Map<String, dynamic> body);
 }

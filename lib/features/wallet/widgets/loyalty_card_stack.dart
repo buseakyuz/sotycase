@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import '../../../product/models/wallet/wallet_summary_model.dart';
 
 class LoyaltyCardStack extends StatefulWidget {
-  final double totalBalance;
-  const LoyaltyCardStack({super.key, required this.totalBalance});
+  final WalletSummaryModel? summary;
+  const LoyaltyCardStack({super.key, this.summary});
 
   @override
   State<LoyaltyCardStack> createState() => _LoyaltyCardStackState();
@@ -11,11 +12,6 @@ class LoyaltyCardStack extends StatefulWidget {
 class _LoyaltyCardStackState extends State<LoyaltyCardStack>
     with SingleTickerProviderStateMixin {
   int _currentIndex = 0;
-  final List<String> _cardImages = [
-    'assets/card/GoldCard.png',
-    'assets/card/BronzCard.png',
-    'assets/card/SilverCard.png',
-  ];
 
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -37,12 +33,12 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
   }
 
   void _swapCards() {
-    if (_controller.isAnimating) return;
+    if (_controller.isAnimating || widget.summary == null) return;
 
     setState(() {
       _controller.forward(from: 0).then((_) {
         setState(() {
-          _currentIndex = (_currentIndex + 1) % _cardImages.length;
+          _currentIndex = (_currentIndex + 1) % 3;
           _controller.reset();
         });
       });
@@ -51,6 +47,8 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
 
   @override
   Widget build(BuildContext context) {
+    if (widget.summary == null) return const SizedBox.shrink();
+
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onVerticalDragEnd: (details) {
@@ -70,27 +68,19 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
                 builder: (context, child) {
                   final double value = _animation.value;
 
-                  int nextIndex = (_currentIndex + 1) % _cardImages.length;
+                  int nextIndex = (_currentIndex + 1) % 3;
                   bool showCurrentOnTop = value < 0.5;
 
                   return Stack(
                     alignment: Alignment.bottomCenter,
                     children: showCurrentOnTop
                         ? [
-                            _buildCardImage(nextIndex, value, isFront: false),
-                            _buildCardImage(
-                              _currentIndex,
-                              value,
-                              isFront: true,
-                            ),
+                            _buildCard(nextIndex, value, isFront: false),
+                            _buildCard(_currentIndex, value, isFront: true),
                           ]
                         : [
-                            _buildCardImage(
-                              _currentIndex,
-                              value,
-                              isFront: true,
-                            ),
-                            _buildCardImage(nextIndex, value, isFront: false),
+                            _buildCard(_currentIndex, value, isFront: true),
+                            _buildCard(nextIndex, value, isFront: false),
                           ],
                   );
                 },
@@ -100,7 +90,7 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
 
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(_cardImages.length, (index) {
+              children: List.generate(3, (index) {
                 final bool isActive = index == _currentIndex;
                 return AnimatedContainer(
                   duration: const Duration(milliseconds: 300),
@@ -120,7 +110,7 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
     );
   }
 
-  Widget _buildCardImage(int index, double animValue, {required bool isFront}) {
+  Widget _buildCard(int index, double animValue, {required bool isFront}) {
     double top;
     double scale;
     double opacity;
@@ -144,42 +134,99 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
         child: Transform.scale(
           scale: scale,
           alignment: Alignment.bottomCenter,
-          child: Stack(
-            alignment: Alignment.centerLeft,
-            children: [
-              Image.asset(
-                _cardImages[index],
-                height: 180,
-                width: double.infinity,
-                fit: BoxFit.contain,
-              ),
-              if (isFront && animValue < 0.1)
-                Positioned(
-                  bottom: 40,
-                  left: 30,
+          child: Container(
+            height: 180,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(24),
+              image:
+                  widget.summary?.walletCover != null &&
+                      widget.summary!.walletCover!.isNotEmpty
+                  ? DecorationImage(
+                      image: NetworkImage(widget.summary!.walletCover!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.2),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Stack(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: LinearGradient(
+                      begin: Alignment.topRight,
+                      end: Alignment.bottomLeft,
+                      colors: [
+                        Colors.black.withValues(alpha: 0.1),
+                        Colors.black.withValues(alpha: 0.4),
+                      ],
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(24.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Toplam Bakiye',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          CircleAvatar(
+                            backgroundColor: Colors.white,
+                            radius: 20,
+                            child: Image.network(
+                              widget.summary?.brandLogo ?? '',
+                              height: 25,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  const Icon(
+                                    Icons.business,
+                                    color: Colors.grey,
+                                  ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.info_outline,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ],
                       ),
-                      Text(
-                        '${widget.totalBalance.toInt()}',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 28,
-                          fontWeight: FontWeight.bold,
+                      if (isFront && animValue < 0.1)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Toplam Soty Coin',
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            Text(
+                              '${widget.summary?.totalAvailableCoin?.toInt() ?? 0}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
                     ],
                   ),
                 ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

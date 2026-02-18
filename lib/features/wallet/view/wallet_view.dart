@@ -22,8 +22,8 @@ class _WalletViewState extends ConsumerState<WalletView> {
 
   @override
   Widget build(BuildContext context) {
-    final walletSummary = ref.watch(walletSummaryProvider);
-    final transactions = ref.watch(transactionsProvider);
+    final walletSummary = ref.watch(walletSummaryProvider());
+    final transactions = ref.watch(transactionsProvider());
 
     return Scaffold(
       appBar: const WalletAppBar(),
@@ -31,15 +31,15 @@ class _WalletViewState extends ConsumerState<WalletView> {
         data: (summary) => transactions.when(
           data: (transactionList) => RefreshIndicator(
             onRefresh: () async {
-              ref.invalidate(walletSummaryProvider);
-              ref.invalidate(transactionsProvider);
+              ref.invalidate(walletSummaryProvider());
+              ref.invalidate(transactionsProvider());
             },
             child: SingleChildScrollView(
               child: Column(
                 children: [
                   const SizedBox(height: 12),
-                  LoyaltyCardStack(totalBalance: summary?.totalBalance ?? 0),
-                  const QuickActionButtons(),
+                  LoyaltyCardStack(summary: summary),
+                  QuickActionButtons(summary: summary),
                   LoyaltyStatusCard(summary: summary),
                   TransactionTabs(
                     onChanged: (index) {

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BaseResponse<T> {
 
-@JsonKey(name: 'ResponseData') T? get responseData;@JsonKey(name: 'MetaData') MetaData? get metaData;
+@JsonKey(name: 'ResponseData', readValue: _readResponseData) T? get responseData;@JsonKey(name: 'MetaData', readValue: _readMetaData) MetaData? get metaData;
 /// Create a copy of BaseResponse
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $BaseResponseCopyWith<T,$Res>  {
   factory $BaseResponseCopyWith(BaseResponse<T> value, $Res Function(BaseResponse<T>) _then) = _$BaseResponseCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'ResponseData') T? responseData,@JsonKey(name: 'MetaData') MetaData? metaData
+@JsonKey(name: 'ResponseData', readValue: _readResponseData) T? responseData,@JsonKey(name: 'MetaData', readValue: _readMetaData) MetaData? metaData
 });
 
 
@@ -166,7 +166,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'ResponseData')  T? responseData, @JsonKey(name: 'MetaData')  MetaData? metaData)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'ResponseData', readValue: _readResponseData)  T? responseData, @JsonKey(name: 'MetaData', readValue: _readMetaData)  MetaData? metaData)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BaseResponse() when $default != null:
 return $default(_that.responseData,_that.metaData);case _:
@@ -187,7 +187,7 @@ return $default(_that.responseData,_that.metaData);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'ResponseData')  T? responseData, @JsonKey(name: 'MetaData')  MetaData? metaData)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'ResponseData', readValue: _readResponseData)  T? responseData, @JsonKey(name: 'MetaData', readValue: _readMetaData)  MetaData? metaData)  $default,) {final _that = this;
 switch (_that) {
 case _BaseResponse():
 return $default(_that.responseData,_that.metaData);case _:
@@ -207,7 +207,7 @@ return $default(_that.responseData,_that.metaData);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'ResponseData')  T? responseData, @JsonKey(name: 'MetaData')  MetaData? metaData)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'ResponseData', readValue: _readResponseData)  T? responseData, @JsonKey(name: 'MetaData', readValue: _readMetaData)  MetaData? metaData)?  $default,) {final _that = this;
 switch (_that) {
 case _BaseResponse() when $default != null:
 return $default(_that.responseData,_that.metaData);case _:
@@ -222,11 +222,11 @@ return $default(_that.responseData,_that.metaData);case _:
 @JsonSerializable(genericArgumentFactories: true)
 
 class _BaseResponse<T> implements BaseResponse<T> {
-  const _BaseResponse({@JsonKey(name: 'ResponseData') this.responseData, @JsonKey(name: 'MetaData') this.metaData});
+  const _BaseResponse({@JsonKey(name: 'ResponseData', readValue: _readResponseData) this.responseData, @JsonKey(name: 'MetaData', readValue: _readMetaData) this.metaData});
   factory _BaseResponse.fromJson(Map<String, dynamic> json,T Function(Object?) fromJsonT) => _$BaseResponseFromJson(json,fromJsonT);
 
-@override@JsonKey(name: 'ResponseData') final  T? responseData;
-@override@JsonKey(name: 'MetaData') final  MetaData? metaData;
+@override@JsonKey(name: 'ResponseData', readValue: _readResponseData) final  T? responseData;
+@override@JsonKey(name: 'MetaData', readValue: _readMetaData) final  MetaData? metaData;
 
 /// Create a copy of BaseResponse
 /// with the given fields replaced by the non-null parameter values.
@@ -261,7 +261,7 @@ abstract mixin class _$BaseResponseCopyWith<T,$Res> implements $BaseResponseCopy
   factory _$BaseResponseCopyWith(_BaseResponse<T> value, $Res Function(_BaseResponse<T>) _then) = __$BaseResponseCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'ResponseData') T? responseData,@JsonKey(name: 'MetaData') MetaData? metaData
+@JsonKey(name: 'ResponseData', readValue: _readResponseData) T? responseData,@JsonKey(name: 'MetaData', readValue: _readMetaData) MetaData? metaData
 });
 
 
@@ -305,7 +305,7 @@ $MetaDataCopyWith<$Res>? get metaData {
 /// @nodoc
 mixin _$MetaData {
 
-@JsonKey(name: 'Message') String? get message;@JsonKey(name: 'ResponseCode') dynamic get responseCode;@JsonKey(name: 'IsSuccess') bool? get isSuccess;
+@JsonKey(name: 'Message', readValue: _readMessage) String? get message;@JsonKey(name: 'ResponseCode', readValue: _readResponseCode) dynamic get responseCode;@JsonKey(name: 'IsSuccess', readValue: _readIsSuccess) bool? get isSuccess;
 /// Create a copy of MetaData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -338,7 +338,7 @@ abstract mixin class $MetaDataCopyWith<$Res>  {
   factory $MetaDataCopyWith(MetaData value, $Res Function(MetaData) _then) = _$MetaDataCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'Message') String? message,@JsonKey(name: 'ResponseCode') dynamic responseCode,@JsonKey(name: 'IsSuccess') bool? isSuccess
+@JsonKey(name: 'Message', readValue: _readMessage) String? message,@JsonKey(name: 'ResponseCode', readValue: _readResponseCode) dynamic responseCode,@JsonKey(name: 'IsSuccess', readValue: _readIsSuccess) bool? isSuccess
 });
 
 
@@ -445,7 +445,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'Message')  String? message, @JsonKey(name: 'ResponseCode')  dynamic responseCode, @JsonKey(name: 'IsSuccess')  bool? isSuccess)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'Message', readValue: _readMessage)  String? message, @JsonKey(name: 'ResponseCode', readValue: _readResponseCode)  dynamic responseCode, @JsonKey(name: 'IsSuccess', readValue: _readIsSuccess)  bool? isSuccess)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MetaData() when $default != null:
 return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
@@ -466,7 +466,7 @@ return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'Message')  String? message, @JsonKey(name: 'ResponseCode')  dynamic responseCode, @JsonKey(name: 'IsSuccess')  bool? isSuccess)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'Message', readValue: _readMessage)  String? message, @JsonKey(name: 'ResponseCode', readValue: _readResponseCode)  dynamic responseCode, @JsonKey(name: 'IsSuccess', readValue: _readIsSuccess)  bool? isSuccess)  $default,) {final _that = this;
 switch (_that) {
 case _MetaData():
 return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
@@ -486,7 +486,7 @@ return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'Message')  String? message, @JsonKey(name: 'ResponseCode')  dynamic responseCode, @JsonKey(name: 'IsSuccess')  bool? isSuccess)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'Message', readValue: _readMessage)  String? message, @JsonKey(name: 'ResponseCode', readValue: _readResponseCode)  dynamic responseCode, @JsonKey(name: 'IsSuccess', readValue: _readIsSuccess)  bool? isSuccess)?  $default,) {final _that = this;
 switch (_that) {
 case _MetaData() when $default != null:
 return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
@@ -501,12 +501,12 @@ return $default(_that.message,_that.responseCode,_that.isSuccess);case _:
 @JsonSerializable()
 
 class _MetaData implements MetaData {
-  const _MetaData({@JsonKey(name: 'Message') this.message, @JsonKey(name: 'ResponseCode') this.responseCode, @JsonKey(name: 'IsSuccess') this.isSuccess});
+  const _MetaData({@JsonKey(name: 'Message', readValue: _readMessage) this.message, @JsonKey(name: 'ResponseCode', readValue: _readResponseCode) this.responseCode, @JsonKey(name: 'IsSuccess', readValue: _readIsSuccess) this.isSuccess});
   factory _MetaData.fromJson(Map<String, dynamic> json) => _$MetaDataFromJson(json);
 
-@override@JsonKey(name: 'Message') final  String? message;
-@override@JsonKey(name: 'ResponseCode') final  dynamic responseCode;
-@override@JsonKey(name: 'IsSuccess') final  bool? isSuccess;
+@override@JsonKey(name: 'Message', readValue: _readMessage) final  String? message;
+@override@JsonKey(name: 'ResponseCode', readValue: _readResponseCode) final  dynamic responseCode;
+@override@JsonKey(name: 'IsSuccess', readValue: _readIsSuccess) final  bool? isSuccess;
 
 /// Create a copy of MetaData
 /// with the given fields replaced by the non-null parameter values.
@@ -541,7 +541,7 @@ abstract mixin class _$MetaDataCopyWith<$Res> implements $MetaDataCopyWith<$Res>
   factory _$MetaDataCopyWith(_MetaData value, $Res Function(_MetaData) _then) = __$MetaDataCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'Message') String? message,@JsonKey(name: 'ResponseCode') dynamic responseCode,@JsonKey(name: 'IsSuccess') bool? isSuccess
+@JsonKey(name: 'Message', readValue: _readMessage) String? message,@JsonKey(name: 'ResponseCode', readValue: _readResponseCode) dynamic responseCode,@JsonKey(name: 'IsSuccess', readValue: _readIsSuccess) bool? isSuccess
 });
 
 

@@ -10,12 +10,15 @@ part 'wallet_service.g.dart';
 abstract class WalletService {
   factory WalletService(Dio dio, {String baseUrl}) = _WalletService;
 
-  @GET("Wallet/GetWalletSummary")
-  Future<BaseResponse<WalletSummaryModel>> getWalletSummary();
+  @GET("Wallet/Brands/{brandId}/Summary")
+  Future<BaseResponse<WalletSummaryModel>> getWalletSummary(@Path("brandId") String brandId);
 
-  @GET("Wallet/GetTransactions")
-  Future<BaseResponse<List<WalletTransactionModel>>> getTransactions();
+  @GET("Wallet/Brands/{brandId}/Transactions")
+  Future<BaseResponse<List<WalletTransactionModel>>> getTransactions(
+    @Path("brandId") String brandId,
+    @Query("FilterType") int filterType,
+  );
 
-  @POST("Wallet/GetWaitingRewardCoin")
+  @POST("Sotier/GetWaitingRewardCoin")
   Future<BaseResponse<dynamic>> getWaitingRewardCoin(@Body() Map<String, dynamic> body);
 }

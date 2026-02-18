@@ -13,13 +13,14 @@ final class NetworkManager {
     );
 
     _dio.interceptors.addAll([
-      AuthInterceptor(),
+      AuthInterceptor(dio: _dio),
       LogInterceptor(
         requestHeader: true,
         requestBody: true,
         responseBody: true,
         responseHeader: false,
         error: true,
+        logPrint: (o) => logger.d(o),
       ),
     ]);
   }

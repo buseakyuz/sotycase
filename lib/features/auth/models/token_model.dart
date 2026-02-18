@@ -8,6 +8,9 @@ abstract class TokenModel with _$TokenModel {
   const factory TokenModel({
     String? accessToken,
     String? refreshToken,
+    int? expiresIn,
+    int? refreshExpiresIn,
+    int? verificationCodeExpiresIn,
   }) = _TokenModel;
 
   factory TokenModel.fromJson(Map<String, dynamic> json) =>

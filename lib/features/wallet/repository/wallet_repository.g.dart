@@ -53,10 +53,10 @@ final class WalletRepositoryProvider
   }
 }
 
-String _$walletRepositoryHash() => r'c4812cb48e486dcfb8de74077d01b607f590422d';
+String _$walletRepositoryHash() => r'8c125179e3c6a4cb6db6aa0c6fbd2271e388fa82';
 
 @ProviderFor(walletSummary)
-final walletSummaryProvider = WalletSummaryProvider._();
+final walletSummaryProvider = WalletSummaryFamily._();
 
 final class WalletSummaryProvider
     extends
@@ -68,19 +68,26 @@ final class WalletSummaryProvider
     with
         $FutureModifier<WalletSummaryModel?>,
         $FutureProvider<WalletSummaryModel?> {
-  WalletSummaryProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'walletSummaryProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  WalletSummaryProvider._({
+    required WalletSummaryFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'walletSummaryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$walletSummaryHash();
+
+  @override
+  String toString() {
+    return r'walletSummaryProvider'
+        ''
+        '($argument)';
+  }
 
   @$internal
   @override
@@ -90,14 +97,43 @@ final class WalletSummaryProvider
 
   @override
   FutureOr<WalletSummaryModel?> create(Ref ref) {
-    return walletSummary(ref);
+    final argument = this.argument as String?;
+    return walletSummary(ref, brandId: argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WalletSummaryProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$walletSummaryHash() => r'a3f769f350b17216b47c59aef0a3068b6550fdd7';
+String _$walletSummaryHash() => r'b1a2e6f69120b71a1e7f3f899fd0d124cb4cb958';
+
+final class WalletSummaryFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<WalletSummaryModel?>, String?> {
+  WalletSummaryFamily._()
+    : super(
+        retry: null,
+        name: r'walletSummaryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WalletSummaryProvider call({String? brandId}) =>
+      WalletSummaryProvider._(argument: brandId, from: this);
+
+  @override
+  String toString() => r'walletSummaryProvider';
+}
 
 @ProviderFor(transactions)
-final transactionsProvider = TransactionsProvider._();
+final transactionsProvider = TransactionsFamily._();
 
 final class TransactionsProvider
     extends
@@ -109,19 +145,26 @@ final class TransactionsProvider
     with
         $FutureModifier<List<WalletTransactionModel>?>,
         $FutureProvider<List<WalletTransactionModel>?> {
-  TransactionsProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'transactionsProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
+  TransactionsProvider._({
+    required TransactionsFamily super.from,
+    required ({String? brandId, int filterType}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'transactionsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
   String debugGetCreateSourceHash() => _$transactionsHash();
+
+  @override
+  String toString() {
+    return r'transactionsProvider'
+        ''
+        '$argument';
+  }
 
   @$internal
   @override
@@ -131,8 +174,48 @@ final class TransactionsProvider
 
   @override
   FutureOr<List<WalletTransactionModel>?> create(Ref ref) {
-    return transactions(ref);
+    final argument = this.argument as ({String? brandId, int filterType});
+    return transactions(
+      ref,
+      brandId: argument.brandId,
+      filterType: argument.filterType,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is TransactionsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
   }
 }
 
-String _$transactionsHash() => r'838abbc687dad608a0c0c181c928a322e2a95695';
+String _$transactionsHash() => r'ff33212c15c06583b69bb5f738a1b5f020f0c536';
+
+final class TransactionsFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          FutureOr<List<WalletTransactionModel>?>,
+          ({String? brandId, int filterType})
+        > {
+  TransactionsFamily._()
+    : super(
+        retry: null,
+        name: r'transactionsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  TransactionsProvider call({String? brandId, int filterType = 1}) =>
+      TransactionsProvider._(
+        argument: (brandId: brandId, filterType: filterType),
+        from: this,
+      );
+
+  @override
+  String toString() => r'transactionsProvider';
+}
