@@ -64,14 +64,19 @@ class _WalletViewState extends ConsumerState<WalletView> {
   }
 
   Widget _buildSelectedList(List<WalletTransactionModel> transactionList) {
+    var filteredList = transactionList
+        .where((t) => t.type == _selectedTab - 1)
+        .toList();
     switch (_selectedTab) {
       case 1: // Bekleyen
         return const PendingTransactionList();
+      case 2: // Geçmiş
+        return TransactionHistoryList(transactions: filteredList);
+      case 3:
+        return TransactionHistoryList(transactions: filteredList);
+
       default:
-        return TransactionHistoryList(
-          selectedIndex: _selectedTab,
-          transactions: transactionList,
-        );
+        return TransactionHistoryList(transactions: transactionList);
     }
   }
 }

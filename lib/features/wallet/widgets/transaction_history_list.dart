@@ -1,28 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sotycase/product/models/wallet/transaction_model.dart';
-import '../../../../product/constants/soty_colors.dart';
 
 class TransactionHistoryList extends StatelessWidget {
-  final int selectedIndex;
   final List<WalletTransactionModel> transactions;
-  
-  const TransactionHistoryList({
-    super.key, 
-    required this.selectedIndex,
-    required this.transactions,
-  });
+
+  const TransactionHistoryList({super.key, required this.transactions});
 
   @override
   Widget build(BuildContext context) {
-    final filteredTransactions = transactions.where((t) {
-      if (selectedIndex == 2) return (t.amount ?? 0) > 0; // Kazandıklarım
-      if (selectedIndex == 3) return (t.amount ?? 0) < 0; // Harcadıklarım
-      return true; // Tümü
-    }).toList();
-
-    if (filteredTransactions.isEmpty) {
-      return const _EmptyState();
-    }
+    if (transactions.isEmpty) return const _EmptyState();
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -31,7 +17,7 @@ class TransactionHistoryList extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
+            color: Colors.black.withOpacity(0.04),
             blurRadius: 15,
             offset: const Offset(0, 4),
           ),
@@ -40,37 +26,20 @@ class TransactionHistoryList extends StatelessWidget {
       child: ListView.separated(
         shrinkWrap: true,
         physics: const NeverScrollableScrollPhysics(),
-        itemCount: filteredTransactions.length,
+        itemCount: transactions.length,
         separatorBuilder: (context, index) => Divider(
           height: 1,
-          indent: 70,
-          endIndent: 16,
+          indent: 72,
+          endIndent: 0,
           color: Colors.grey.shade100,
         ),
         itemBuilder: (context, index) {
           return _TransactionTile(
-            transaction: filteredTransactions[index],
+            transaction: transactions[index],
             isFirst: index == 0,
-            isLast: index == filteredTransactions.length - 1,
+            isLast: index == transactions.length - 1,
           );
         },
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 50),
-        child: Text(
-          'İşlem bulunmamaktadır.',
-          style: TextStyle(color: SotyColors.gray),
-        ),
       ),
     );
   }
@@ -96,131 +65,148 @@ class _TransactionTileState extends State<_TransactionTile> {
 
   @override
   Widget build(BuildContext context) {
-    final amount = widget.transaction.amount ?? 0;
-    final isPositive = amount > 0;
+    final amount = widget.transaction.coin ?? 0;
+    final balance = widget.transaction.balance ?? 0;
+    final isExpense = widget.transaction.type == 2;
+    final isPositive = !isExpense;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.vertical(
-        top: widget.isFirst ? const Radius.circular(16) : Radius.zero,
-        bottom: widget.isLast ? const Radius.circular(16) : Radius.zero,
-      ),
-      child: Column(
-        children: [
-          ListTile(
-            onTap: () => setState(() => _isExpanded = !_isExpanded),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 16,
-              vertical: 6,
+    return Column(
+      children: [
+        ListTile(
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          contentPadding: const EdgeInsets.fromLTRB(16, 8, 12, 8),
+          leading: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: const Color(0xFFF7F8FA),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.shade100),
             ),
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: SotyColors.lightGray,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                _getIconForType(widget.transaction.transactionType),
-                color: SotyColors.gray,
-                size: 24,
-              ),
-            ),
-            title: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    widget.transaction.title ?? 'İşlem',
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: SotyColors.textPrimary,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.info_outline,
-                  size: 14,
-                  color: Color(0xFFCBD5E0),
-                ),
-              ],
-            ),
-            subtitle: Text(
-              widget.transaction.transactionDate ?? '',
-              style: const TextStyle(fontSize: 11, color: SotyColors.gray),
-            ),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      '${isPositive ? "+" : ""}${amount.toInt()}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                        color:
-                            isPositive ? SotyColors.success : SotyColors.error,
-                      ),
-                    ),
-                    if (widget.transaction.orderNo != null)
-                      Text(
-                        'No: ${widget.transaction.orderNo}',
-                        style: const TextStyle(
-                          fontSize: 10,
-                          color: SotyColors.textSecondary,
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(width: 8),
-                Icon(
-                  _isExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: const Color(0xFFCBD5E0),
-                  size: 20,
-                ),
-              ],
+            child: Icon(
+              _getIconForType(widget.transaction.typeName),
+              color: const Color(0xFF718096),
+              size: 24,
             ),
           ),
-          AnimatedCrossFade(
-            firstChild: const SizedBox.shrink(),
-            secondChild: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.only(left: 70, right: 16, bottom: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
+            children: [
+              Text(
+                widget.transaction.typeName ?? 'İşlem',
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const SizedBox(width: 4),
+              const Icon(
+                Icons.info_outline,
+                size: 16,
+                color: Color(0xFFCBD5E0),
+              ),
+            ],
+          ),
+          subtitle: Padding(
+            padding: const EdgeInsets.all(2.0),
+            child: Text(
+              _formatDate(widget.transaction.date),
+              style: const TextStyle(fontSize: 12, color: Color(0xFFA0AEC0)),
+            ),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Divider(color: Colors.grey.shade50),
-                  if (widget.transaction.brandName != null) ...[
-                    const Text(
-                      'Marka',
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w600,
-                      ),
+                  Text(
+                    '${isPositive ? "+" : "-"}${amount.toInt()}',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: isPositive
+                          ? const Color(0xFF48BB78)
+                          : const Color(0xFFF56565),
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      widget.transaction.brandName!,
+                  ),
+                  const SizedBox(height: 2),
+                  RichText(
+                    text: TextSpan(
                       style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                        color: SotyColors.textPrimary,
+                        fontSize: 11,
+                        color: Color(0xFFA0AEC0),
                       ),
+                      children: [
+                        const TextSpan(text: 'Bakiye: '),
+                        TextSpan(
+                          text: balance.toInt().toString(),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF4A5568),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ],
               ),
+              const SizedBox(width: 8),
+              Icon(
+                _isExpanded
+                    ? Icons.keyboard_arrow_up
+                    : Icons.keyboard_arrow_down,
+                color: const Color(0xFFCBD5E0),
+                size: 24,
+              ),
+            ],
+          ),
+        ),
+        if (_isExpanded) _buildExpandedDetail(),
+      ],
+    );
+  }
+
+  Widget _buildExpandedDetail() {
+    final detail = widget.transaction.detail;
+    if (detail == null) return const SizedBox.shrink();
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.only(left: 72, right: 16, bottom: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (detail.transferParty != null)
+            _detailRow('Transfer Edilen', detail.transferParty!),
+          if (detail.orderNumber != null)
+            _detailRow('Sipariş No', detail.orderNumber!),
+        ],
+      ),
+    );
+  }
+
+  Widget _detailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 10,
+              color: Colors.grey,
+              fontWeight: FontWeight.bold,
             ),
-            crossFadeState: _isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 200),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D3748),
+            ),
           ),
         ],
       ),
@@ -228,15 +214,45 @@ class _TransactionTileState extends State<_TransactionTile> {
   }
 
   IconData _getIconForType(String? type) {
-    switch (type?.toLowerCase()) {
-      case 'shopping':
+    switch (type) {
+      case 'Kampanya':
+        return Icons.local_offer_outlined;
+      case 'Görev':
+        return Icons.event_available_outlined;
+      case 'Alışveriş':
         return Icons.shopping_bag_outlined;
-      case 'campaign':
-        return Icons.label_outline;
-      case 'gift':
+      case 'İade':
+        return Icons.keyboard_return_outlined;
+      case 'Transfer':
+        return Icons.swap_horiz_outlined;
+      case 'Hediye':
         return Icons.card_giftcard_outlined;
+      case 'Görev Silindi':
+        return Icons.error_outline_outlined;
       default:
         return Icons.monetization_on_outlined;
     }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '';
+    // API'den gelen ISO formatını basitçe görseldeki formata (Gün Ay Saat) benzetmek için
+    return dateStr.split('T')[0].replaceAll('-', '.');
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 50),
+        child: Text(
+          'İşlem bulunmamaktadır.',
+          style: TextStyle(color: Colors.grey),
+        ),
+      ),
+    );
   }
 }

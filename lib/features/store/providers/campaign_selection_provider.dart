@@ -1,5 +1,5 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/campaign_model.dart';
+import '../../../product/models/campaign/campaign_model.dart';
 
 part 'campaign_selection_provider.g.dart';
 

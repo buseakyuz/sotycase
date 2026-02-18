@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sotycase/features/store/models/campaign_model.dart';
+import 'package:intl/intl.dart';
+import 'package:sotycase/product/models/campaign/campaign_model.dart';
 import 'package:sotycase/features/store/providers/campaign_selection_provider.dart';
 import 'package:sotycase/features/store/widgets/campaign_card.dart';
 import 'package:sotycase/features/store/widgets/coin_usage_card.dart';
-
+import 'package:sotycase/features/store/repository/campaign_repository.dart';
+import 'package:sotycase/features/wallet/repository/wallet_repository.dart';
 
 class StoreView extends ConsumerStatefulWidget {
   const StoreView({super.key});
@@ -18,6 +20,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
   @override
   Widget build(BuildContext context) {
     final selectedCampaigns = ref.watch(campaignSelectionProvider);
+    final walletSummaryAsync = ref.watch(walletSummaryProvider());
     final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
@@ -34,10 +37,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
         ),
         title: const Text('Mağaza Alışverişi'),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.qr_code_scanner),
-          ),
+          IconButton(onPressed: () {}, icon: const Icon(Icons.qr_code_scanner)),
           IconButton(
             onPressed: () {},
             icon: const Icon(Icons.notifications_none),
@@ -50,7 +50,15 @@ class _StoreViewState extends ConsumerState<StoreView> {
             padding: const EdgeInsets.only(bottom: 100),
             child: Column(
               children: [
-                const CoinUsageCard(totalBalance: "50.000"),
+                walletSummaryAsync.when(
+                  data: (summary) {
+                    final balance = summary?.totalAvailableCoin ?? 0;
+                    final formattedBalance = NumberFormat.decimalPattern('tr_TR').format(balance);
+                    return CoinUsageCard(totalBalance: formattedBalance);
+                  },
+                  loading: () => const CoinUsageCard(totalBalance: "0"),
+                  error: (error, stack) => const CoinUsageCard(totalBalance: "0"),
+                ),
                 const SizedBox(height: 16),
                 _buildCampaignList(selectedCampaigns),
               ],
@@ -63,43 +71,60 @@ class _StoreViewState extends ConsumerState<StoreView> {
   }
 
   Widget _buildCampaignList(Set<CampaignModel> selectedCampaigns) {
-    final campaigns = <CampaignModel>[]; // Empty for now until API is ready
-    
-    if (campaigns.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 40),
-          child: Text(
-            'Kullanılabilir kampanya bulunmamaktadır.',
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-      );
-    }
+    final campaignsAsync = ref.watch(activeCampaignsProvider());
 
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: campaigns.length,
-      itemBuilder: (context, index) {
-        final campaign = campaigns[index];
-        final isSelected = selectedCampaigns.contains(campaign);
+    return campaignsAsync.when(
+      data: (campaigns) {
+        if (campaigns.isEmpty) {
+          return const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Text(
+                'Kullanılabilir kampanya bulunmamaktadır.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
+          );
+        }
 
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: CampaignCard(
-            id: campaign.id,
-            brandName: campaign.brandName,
-            title: campaign.title,
-            description: campaign.description,
-            expiryDate: campaign.expiryDate,
-            isCombinable: campaign.isCombinable,
-            isSelected: isSelected,
-            onSelect: () => _onCampaignTap(campaign),
-          ),
+        return ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          itemCount: campaigns.length,
+          itemBuilder: (context, index) {
+            final campaign = campaigns[index];
+            final isSelected = selectedCampaigns.contains(campaign);
+
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: CampaignCard(
+                id: campaign.id,
+                brandName: campaign.brandName,
+                name: campaign.name,
+                description: campaign.description,
+                endDate: campaign.endDate,
+                image: campaign.image,
+                isCombinable: campaign.isCombinable,
+                isSelected: isSelected,
+                onSelect: () => _onCampaignTap(campaign),
+              ),
+            );
+          },
         );
       },
+      loading: () => const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+      error: (error, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 40),
+          child: Text('Hata: $error'),
+        ),
+      ),
     );
   }
 
@@ -170,7 +195,10 @@ class _StoreViewState extends ConsumerState<StoreView> {
     );
   }
 
-  Widget _buildStickyButton(Set<CampaignModel> selectedCampaigns, TextTheme textTheme) {
+  Widget _buildStickyButton(
+    Set<CampaignModel> selectedCampaigns,
+    TextTheme textTheme,
+  ) {
     final bool hasSelection = selectedCampaigns.isNotEmpty;
     return Positioned(
       bottom: 20,

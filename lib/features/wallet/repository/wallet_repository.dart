@@ -16,7 +16,8 @@ class WalletRepository {
 
   static const String _defaultBrandId = '550e8400-e29b-41d4-a716-446655440000';
 
-  Future<T?> _handleRequest<T>(Future<T?> Function() request) async { // Changed signature
+  Future<T?> _handleRequest<T>(Future<T?> Function() request) async {
+    // Changed signature
     try {
       return await request();
     } on TokenRefreshException {
@@ -41,12 +42,22 @@ class WalletRepository {
     String? brandId,
     int filterType = 1,
   }) async {
-    return _handleRequest(() async {
+    return _handleRequest<List<WalletTransactionModel>>(() async {
       final response = await _walletService.getTransactions(
         brandId ?? _defaultBrandId,
         filterType,
       );
-      return response.responseData;
+
+      final data = response.responseData;
+      if (data is Map<String, dynamic> && data.containsKey('transactions')) {
+        final transactionList = data['transactions'] as List;
+        return transactionList
+            .map(
+              (i) => WalletTransactionModel.fromJson(i as Map<String, dynamic>),
+            )
+            .toList();
+      }
+      return null;
     });
   }
 

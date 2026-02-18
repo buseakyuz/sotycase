@@ -1,13 +1,23 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
 import '../../../models/base/base_response.dart';
 
-part 'auth_service.g.dart';
+class AuthService {
+  final Dio _dio;
 
-@RestApi()
-abstract class AuthService {
-  factory AuthService(Dio dio, {String baseUrl}) = _AuthService;
+  AuthService(this._dio);
 
-  @POST("Auth/SignIn")
-  Future<BaseResponse<dynamic>> signIn(@Body() Map<String, dynamic> body);
+  Future<BaseResponse<dynamic>> signIn(Map<String, dynamic> body) async {
+    try {
+      final response = await _dio.post(
+        'Auth/SignIn',
+        data: body,
+      );
+      // Since we have a generic BaseResponse, we need to handle the T type manually.
+      // For signIn, the responseData is dynamic (or a TokenModel map).
+      return BaseResponse.fromJson(response.data, (json) => json);
+    } catch (e) {
+      // It's better to rethrow and let the repository/interceptor handle it.
+      rethrow;
+    }
+  }
 }

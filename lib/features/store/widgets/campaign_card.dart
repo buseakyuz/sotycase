@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import '../../../../product/constants/soty_colors.dart';
+import 'package:intl/intl.dart';
 
 class CampaignCard extends StatelessWidget {
   final String id;
   final String brandName;
-  final String title;
+  final String name;
   final String description;
-  final String expiryDate;
+  final String endDate;
+  final String? image;
   final bool isCombinable;
   final bool isSelected;
   final VoidCallback onSelect;
@@ -15,13 +17,24 @@ class CampaignCard extends StatelessWidget {
     super.key,
     required this.id,
     required this.brandName,
-    required this.title,
+    required this.name,
     required this.description,
-    required this.expiryDate,
+    required this.endDate,
     required this.isCombinable,
     required this.isSelected,
     required this.onSelect,
+    this.image,
   });
+
+  String _formatDate(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr);
+      if (date.year <= 1) return "-";
+      return DateFormat('dd.MM.yyyy').format(date);
+    } catch (e) {
+      return dateStr;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,8 +79,22 @@ class CampaignCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
+          if (image != null && image!.isNotEmpty) ...[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                image!,
+                height: 120,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) =>
+                    const SizedBox.shrink(),
+              ),
+            ),
+            const SizedBox(height: 12),
+          ],
           Text(
-            title,
+            name,
             style: const TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 15,
@@ -105,7 +132,7 @@ class CampaignCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Bitiş: $expiryDate',
+                      'Bitiş: ${_formatDate(endDate)}',
                       style: const TextStyle(
                         fontSize: 11,
                         color: Color(0xFF4A5568),
@@ -124,15 +151,14 @@ class CampaignCard extends StatelessWidget {
 
   Widget _buildBrandBadge() {
     return Container(
-      padding: const EdgeInsets.all(4),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade100),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        brandName.replaceFirst(" ", "\n"),
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold),
+        brandName,
+        style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
       ),
     );
   }

@@ -10,7 +10,7 @@ class BaseView extends StatefulWidget {
 }
 
 class _BaseViewState extends State<BaseView> {
-  int _currentIndex = 2; // Default to Wallet
+  int _currentIndex = 2;
 
   final List<Widget> _screens = [
     const Scaffold(body: Center(child: Text('Akış'))),
@@ -23,27 +23,80 @@ class _BaseViewState extends State<BaseView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        selectedItemColor: SotyColors.primary,
-        unselectedItemColor: Colors.grey,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.flash_on_outlined), label: 'Akış'),
-          BottomNavigationBarItem(icon: Icon(Icons.assignment_outlined), label: 'Görev'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.account_balance_wallet),
-            label: 'Cüzdan',
+      extendBody: true, // Navigation bar arkasının boş kalmaması için
+      body: IndexedStack(index: _currentIndex, children: _screens),
+      bottomNavigationBar: _buildBottomAppBar(),
+      floatingActionButton: _buildMiddleButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _buildBottomAppBar() {
+    return BottomAppBar(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      height: 70,
+      color: Colors.white,
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8,
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildNavItem(0, Icons.home_outlined, 'Akış'),
+              const SizedBox(width: 20),
+              _buildNavItem(1, Icons.assignment_outlined, 'Görev'),
+            ],
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.local_offer_outlined), label: 'Kampanya'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'Profil'),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildNavItem(3, Icons.explore_outlined, 'Kampanya'),
+              const SizedBox(width: 20),
+              _buildNavItem(4, Icons.person_outline, 'Profil'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMiddleButton() {
+    return Container(
+      margin: const EdgeInsets.only(top: 10),
+      child: FloatingActionButton(
+        onPressed: () => setState(() => _currentIndex = 2),
+        backgroundColor: SotyColors.primary,
+        elevation: 4,
+        shape: const CircleBorder(),
+        child: const Icon(
+          Icons.account_balance_wallet,
+          color: Colors.white,
+          size: 30,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, String label) {
+    bool isSelected = _currentIndex == index;
+    return InkWell(
+      onTap: () => setState(() => _currentIndex = index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: isSelected ? Colors.black : Colors.grey, size: 26),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+              color: isSelected ? Colors.black : Colors.grey,
+            ),
+          ),
         ],
       ),
     );

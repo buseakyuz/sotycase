@@ -1,24 +1,53 @@
 import 'package:dio/dio.dart';
-import 'package:retrofit/retrofit.dart';
 import '../models/base/base_response.dart';
 import '../models/wallet/wallet_summary_model.dart';
-import '../models/wallet/transaction_model.dart';
 
-part 'wallet_service.g.dart';
+class WalletService {
+  final Dio _dio;
 
-@RestApi()
-abstract class WalletService {
-  factory WalletService(Dio dio, {String baseUrl}) = _WalletService;
+  WalletService(this._dio);
 
-  @GET("Wallet/Brands/{brandId}/Summary")
-  Future<BaseResponse<WalletSummaryModel>> getWalletSummary(@Path("brandId") String brandId);
+  Future<BaseResponse<WalletSummaryModel>> getWalletSummary(
+    String brandId,
+  ) async {
+    try {
+      final response = await _dio.get('Wallet/Brands/$brandId/Summary');
+      return BaseResponse.fromJson(
+        response.data,
+        (json) => WalletSummaryModel.fromJson(json as Map<String, dynamic>),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 
-  @GET("Wallet/Brands/{brandId}/Transactions")
-  Future<BaseResponse<List<WalletTransactionModel>>> getTransactions(
-    @Path("brandId") String brandId,
-    @Query("FilterType") int filterType,
-  );
+  Future<BaseResponse<dynamic>> getTransactions(
+    String brandId,
+    int filterType,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'Wallet/Brands/$brandId/Transactions',
+        queryParameters: {'FilterType': filterType},
+      );
 
-  @POST("Sotier/GetWaitingRewardCoin")
-  Future<BaseResponse<dynamic>> getWaitingRewardCoin(@Body() Map<String, dynamic> body);
+      return BaseResponse.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<BaseResponse<dynamic>> getWaitingRewardCoin(
+    Map<String, dynamic> body,
+  ) async {
+    try {
+      final response = await _dio.post(
+        'Sotier/GetWaitingRewardCoin',
+        data: body,
+      );
+      return BaseResponse.fromJson(response.data, (json) => json);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

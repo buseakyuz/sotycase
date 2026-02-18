@@ -9,21 +9,43 @@ part of 'transaction_model.dart';
 _WalletTransactionModel _$WalletTransactionModelFromJson(
   Map<String, dynamic> json,
 ) => _WalletTransactionModel(
-  amount: (json['Amount'] as num?)?.toDouble(),
-  title: json['Title'] as String?,
-  orderNo: json['OrderNo'] as String?,
-  transactionDate: json['TransactionDate'] as String?,
-  transactionType: json['TransactionType'] as String?,
-  brandName: json['BrandName'] as String?,
+  type: (json['type'] as num?)?.toInt(),
+  typeName: json['typeName'] as String?,
+  transactionType: (json['transactionType'] as num?)?.toInt(),
+  transactionTypeName: json['transactionTypeName'] as String?,
+  date: json['date'] as String?,
+  coin: (json['coin'] as num?)?.toDouble(),
+  balance: (json['balance'] as num?)?.toDouble(),
+  detail: json['detail'] == null
+      ? null
+      : TransactionDetail.fromJson(json['detail'] as Map<String, dynamic>),
 );
 
 Map<String, dynamic> _$WalletTransactionModelToJson(
   _WalletTransactionModel instance,
 ) => <String, dynamic>{
-  'Amount': instance.amount,
-  'Title': instance.title,
-  'OrderNo': instance.orderNo,
-  'TransactionDate': instance.transactionDate,
-  'TransactionType': instance.transactionType,
-  'BrandName': instance.brandName,
+  'type': instance.type,
+  'typeName': instance.typeName,
+  'transactionType': instance.transactionType,
+  'transactionTypeName': instance.transactionTypeName,
+  'date': instance.date,
+  'coin': instance.coin,
+  'balance': instance.balance,
+  'detail': instance.detail,
 };
+
+_TransactionDetail _$TransactionDetailFromJson(Map<String, dynamic> json) =>
+    _TransactionDetail(
+      title: json['title'] as String?,
+      subTitle: json['subTitle'] as String?,
+      orderNumber: json['orderNumber'] as String?,
+      transferParty: json['transferParty'] as String?,
+    );
+
+Map<String, dynamic> _$TransactionDetailToJson(_TransactionDetail instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'subTitle': instance.subTitle,
+      'orderNumber': instance.orderNumber,
+      'transferParty': instance.transferParty,
+    };

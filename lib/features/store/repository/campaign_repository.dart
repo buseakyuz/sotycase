@@ -3,9 +3,9 @@ import '../../../product/network/interceptor/auth_interceptor.dart';
 import '../../../product/network/network_provider.dart';
 import '../../../product/providers/auth/auth_provider.dart';
 import '../../../product/service/campaign_service.dart';
+import '../../../product/models/campaign/campaign_model.dart';
 
 part 'campaign_repository.g.dart';
-
 
 class CampaignRepository {
   final CampaignService _campaignService;
@@ -15,7 +15,7 @@ class CampaignRepository {
 
   static const String _defaultBrandId = '550e8400-e29b-41d4-a716-446655440000';
 
-  Future<T?> _handleRequest<T>(Future<T?> Function() request) async { // Changed signature
+  Future<T?> _handleRequest<T>(Future<T?> Function() request) async {
     try {
       return await request();
     } on TokenRefreshException {
@@ -26,21 +26,22 @@ class CampaignRepository {
     }
   }
 
-  Future<dynamic> getActiveCampaign({String? brandId}) async {
-    return _handleRequest(() async {
+  Future<List<CampaignModel>> getActiveCampaign({String? brandId}) async {
+    final result = await _handleRequest(() async {
       final response = await _campaignService.getActiveCampaign(
         brandId ?? _defaultBrandId,
         true, // isAllUsers
-        2,    // channelType
-        1,    // pageNumber
-        10,   // pageSize
-        0,    // sortDirection
+        2, // channelType
+        1, // pageNumber
+        10, // pageSize
+        0, // sortDirection
       );
       return response.responseData;
     });
+    return result ?? [];
   }
 
-  Future<bool> generatePaymentQrCode({
+  Future<String?> generatePaymentQrCode({
     required String brandId,
     required List<String> campaignIds,
     double? coinAmount,
@@ -51,9 +52,10 @@ class CampaignRepository {
         'campaignIds': campaignIds,
         'coinAmount': coinAmount,
       });
-      return response.metaData?.isSuccess ?? false;
+
+      return response.responseData?['paymentCode'] as String?;
     });
-    return result ?? false;
+    return result;
   }
 }
 
@@ -64,6 +66,8 @@ CampaignRepository campaignRepository(Ref ref) {
 }
 
 @riverpod
-Future<dynamic> activeCampaigns(Ref ref, {String? brandId}) async {
-  return ref.watch(campaignRepositoryProvider).getActiveCampaign(brandId: brandId);
+Future<List<CampaignModel>> activeCampaigns(Ref ref, {String? brandId}) async {
+  return ref
+      .watch(campaignRepositoryProvider)
+      .getActiveCampaign(brandId: brandId);
 }

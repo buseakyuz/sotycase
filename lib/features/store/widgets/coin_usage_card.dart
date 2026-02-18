@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:sotycase/features/store/models/campaign_model.dart';
+import 'package:sotycase/product/models/campaign/campaign_model.dart';
 import 'package:sotycase/features/store/providers/campaign_selection_provider.dart';
 import 'package:sotycase/features/store/providers/coin_usage_provider.dart';
 import 'package:sotycase/product/constants/soty_colors.dart';
@@ -142,7 +142,7 @@ class CoinUsageCard extends ConsumerWidget {
             .map(
               (c) => Chip(
                 label: Text(
-                  c.title,
+                  c.name,
                   style: const TextStyle(fontSize: 10, color: Colors.white),
                 ),
                 backgroundColor: SotyColors.primary,

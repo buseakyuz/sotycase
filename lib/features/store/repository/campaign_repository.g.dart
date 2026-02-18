@@ -61,8 +61,15 @@ String _$campaignRepositoryHash() =>
 final activeCampaignsProvider = ActiveCampaignsFamily._();
 
 final class ActiveCampaignsProvider
-    extends $FunctionalProvider<AsyncValue<dynamic>, dynamic, FutureOr<dynamic>>
-    with $FutureModifier<dynamic>, $FutureProvider<dynamic> {
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<CampaignModel>>,
+          List<CampaignModel>,
+          FutureOr<List<CampaignModel>>
+        >
+    with
+        $FutureModifier<List<CampaignModel>>,
+        $FutureProvider<List<CampaignModel>> {
   ActiveCampaignsProvider._({
     required ActiveCampaignsFamily super.from,
     required String? super.argument,
@@ -86,11 +93,12 @@ final class ActiveCampaignsProvider
 
   @$internal
   @override
-  $FutureProviderElement<dynamic> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<List<CampaignModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<dynamic> create(Ref ref) {
+  FutureOr<List<CampaignModel>> create(Ref ref) {
     final argument = this.argument as String?;
     return activeCampaigns(ref, brandId: argument);
   }
@@ -106,10 +114,10 @@ final class ActiveCampaignsProvider
   }
 }
 
-String _$activeCampaignsHash() => r'46c708f59aaa06468bc610639b18345ec53eedb3';
+String _$activeCampaignsHash() => r'ade0b7ddac56cb86a60827ab9296de049482c412';
 
 final class ActiveCampaignsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<dynamic>, String?> {
+    with $FunctionalFamilyOverride<FutureOr<List<CampaignModel>>, String?> {
   ActiveCampaignsFamily._()
     : super(
         retry: null,
