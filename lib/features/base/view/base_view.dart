@@ -40,25 +40,16 @@ class _BaseViewState extends State<BaseView> {
       notchMargin: 8,
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildNavItem(0, Icons.home_outlined, 'Akış'),
-              const SizedBox(width: 20),
-              _buildNavItem(1, Icons.assignment_outlined, 'Görev'),
-            ],
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              _buildNavItem(3, Icons.explore_outlined, 'Kampanya'),
-              const SizedBox(width: 20),
-              _buildNavItem(4, Icons.person_outline, 'Profil'),
-            ],
-          ),
-        ],
+          _buildNavItem(0, Icons.home_outlined, 'Akış'),
+
+          _buildNavItem(1, Icons.assignment_outlined, 'Görev'),
+          SizedBox(width: 40),
+          _buildNavItem(3, Icons.explore_outlined, 'Kampanya'),
+
+          _buildNavItem(4, Icons.person_outline, 'Profil'),
+        ].map((child) => Expanded(child: child)).toList(),
       ),
     );
   }
