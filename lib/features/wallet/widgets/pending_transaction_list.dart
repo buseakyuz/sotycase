@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:sotycase/product/constants/soty_colors.dart';
+import 'package:sotycase/product/models/wallet/pending_transaction_model.dart';
 import '../providers/pending_transaction_provider.dart';
-import '../models/pending_transaction_model.dart';
 
 class PendingTransactionList extends ConsumerWidget {
   const PendingTransactionList({super.key});

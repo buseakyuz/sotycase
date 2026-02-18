@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoyaltyCardStack extends StatefulWidget {
-  const LoyaltyCardStack({super.key});
+  final double totalBalance;
+  const LoyaltyCardStack({super.key, required this.totalBalance});
 
   @override
   State<LoyaltyCardStack> createState() => _LoyaltyCardStackState();
@@ -143,10 +144,42 @@ class _LoyaltyCardStackState extends State<LoyaltyCardStack>
         child: Transform.scale(
           scale: scale,
           alignment: Alignment.bottomCenter,
-          child: Image.asset(
-            _cardImages[index],
-            height: 180,
-            width: double.infinity,
+          child: Stack(
+            alignment: Alignment.centerLeft,
+            children: [
+              Image.asset(
+                _cardImages[index],
+                height: 180,
+                width: double.infinity,
+                fit: BoxFit.contain,
+              ),
+              if (isFront && animValue < 0.1)
+                Positioned(
+                  bottom: 40,
+                  left: 30,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Toplam Bakiye',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      Text(
+                        '${widget.totalBalance.toInt()}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
       ),

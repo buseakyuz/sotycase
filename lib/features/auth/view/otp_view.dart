@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pinput/pinput.dart';
-import 'package:sotycase/features/auth/providers/auth_notifier.dart';
-import 'package:sotycase/product/constants/soty_colors.dart';
+import '../providers/auth_notifier.dart';
+import '../../../../product/constants/soty_colors.dart';
 
 class OtpView extends ConsumerStatefulWidget {
-  final String? phone;
-  const OtpView({super.key, this.phone});
+  final String phone;
+  const OtpView({super.key, required this.phone});
 
   @override
   ConsumerState<OtpView> createState() => _OtpViewState();
@@ -15,20 +15,6 @@ class OtpView extends ConsumerStatefulWidget {
 
 class _OtpViewState extends ConsumerState<OtpView> {
   final _pinController = TextEditingController();
-  bool _isButtonEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _pinController.addListener(() {
-      final newIsButtonEnabled = _pinController.text.length == 6;
-      if (newIsButtonEnabled != _isButtonEnabled) {
-        setState(() {
-          _isButtonEnabled = newIsButtonEnabled;
-        });
-      }
-    });
-  }
 
   @override
   void dispose() {
@@ -36,137 +22,129 @@ class _OtpViewState extends ConsumerState<OtpView> {
     super.dispose();
   }
 
+  Future<void> _onVerify() async {
+    if (_pinController.text.length < 6) return;
+
+    final success = await ref.read(authProvider.notifier).verifyCode(
+          widget.phone,
+          _pinController.text,
+        );
+
+    if (success && mounted) {
+      context.go('/wallet');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
-    final authNotifier = ref.read(authProvider.notifier);
-
-    ref.listen(authProvider, (previous, next) {
-      if (next.errorMessage != null &&
-          next.errorMessage != previous?.errorMessage) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(next.errorMessage!)));
-      }
-    });
-
-    final formattedTime =
-        '00:${authState.remainingTime.toString().padLeft(2, '0')}';
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: const BackButton(color: SotyColors.textPrimary),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: SotyColors.textPrimary),
+          onPressed: () => context.pop(),
+        ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const SizedBox(height: 40),
-            const Text(
-              'Doğrulama Kodunu Girin',
-              style: TextStyle(
-                color: SotyColors.textPrimary,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              '${widget.phone} numaralı telefona gönderilen 6 haneli kodu girin.',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: SotyColors.textSecondary, fontSize: 16),
-            ),
-            const SizedBox(height: 40),
-            Pinput(
-              controller: _pinController,
-              length: 6,
-              autofocus: true,
-              defaultPinTheme: PinTheme(
-                width: 50,
-                height: 55,
-                textStyle: const TextStyle(
-                  fontSize: 22,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            children: [
+              Image.asset("assets/logo/sotylogo.png", height: 120),
+              const SizedBox(height: 40),
+              Text(
+                'Doğrulama Kodu',
+                style: textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: SotyColors.textPrimary,
                 ),
-                decoration: BoxDecoration(
-                  color: SotyColors.lightGray,
-                  border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(12),
-                ),
               ),
-              focusedPinTheme: PinTheme(
-                width: 50,
-                height: 55,
-                decoration: BoxDecoration(
-                  color: SotyColors.lightGray,
-                  border: Border.all(color: SotyColors.primary, width: 2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-            const SizedBox(height: 30),
-            if (authState.remainingTime > 0)
+              const SizedBox(height: 8),
               Text(
-                'Kalan Süre: $formattedTime',
-                style: const TextStyle(
-                  fontSize: 16,
+                '${widget.phone} numaralı telefona gönderilen kodu giriniz.',
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
                   color: SotyColors.textSecondary,
-                  fontWeight: FontWeight.w500,
                 ),
-              )
-            else
-              TextButton(
-                onPressed: authNotifier.resendCode,
-                child: const Text(
-                  'Tekrar Gönder',
-                  style: TextStyle(
-                    color: SotyColors.primary,
+              ),
+              const SizedBox(height: 40),
+              Pinput(
+                length: 6,
+                controller: _pinController,
+                onCompleted: (_) => _onVerify(),
+                defaultPinTheme: PinTheme(
+                  width: 50,
+                  height: 56,
+                  textStyle: textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
-                ),
-              ),
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton(
-                onPressed: _isButtonEnabled && !authState.isLoading
-                    ? () async {
-                        final success = await authNotifier.verifyCode(
-                          _pinController.text,
-                        );
-                        if (mounted && success) {
-                          context.go('/wallet');
-                        }
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: SotyColors.primary,
-                  disabledBackgroundColor: Colors.grey[300],
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
+                  decoration: BoxDecoration(
+                    color: SotyColors.lightGray,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey.shade300),
                   ),
                 ),
-                child: authState.isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text(
-                        'Doğrula',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                focusedPinTheme: PinTheme(
+                  width: 50,
+                  height: 56,
+                  textStyle: textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: SotyColors.primary, width: 2),
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-          ],
+              const SizedBox(height: 40),
+              if (authState.errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Text(
+                    authState.errorMessage!,
+                    style: TextStyle(color: SotyColors.error, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: authState.isLoading ? null : _onVerify,
+                  child: authState.isLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Doğrula'),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Kod gelmedi mi? ',
+                    style: textTheme.bodyMedium,
+                  ),
+                  TextButton(
+                    onPressed: authState.remainingTime > 0 ? null : () => ref.read(authProvider.notifier).resendCode(),
+                    child: Text(
+                      authState.remainingTime > 0
+                          ? 'Tekrar Gönder (${authState.remainingTime}s)'
+                          : 'Tekrar Gönder',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: authState.remainingTime > 0 ? Colors.grey : SotyColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

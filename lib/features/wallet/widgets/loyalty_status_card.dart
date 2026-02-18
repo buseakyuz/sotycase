@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sotycase/product/models/wallet/wallet_summary_model.dart';
 import '../../../../product/constants/soty_colors.dart';
 
 class LoyaltyStatusCard extends StatelessWidget {
-  const LoyaltyStatusCard({super.key});
+  final WalletSummaryModel? summary;
+  const LoyaltyStatusCard({super.key, this.summary});
 
   @override
   Widget build(BuildContext context) {
@@ -63,11 +65,15 @@ class LoyaltyStatusCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               _buildInfoColumn(
-                'Son Gün',
-                '31 ARALIK',
-                icon: Icons.access_time_filled,
+                'Kullanılabilir Coin',
+                '${summary?.usableBalance?.toInt() ?? 0}',
+                icon: Icons.monetization_on_outlined,
               ),
-              _buildInfoColumn('Harcanan TL', '1.100 ₺', isBoldValue: true),
+              _buildInfoColumn(
+                'Toplam Coin',
+                '${summary?.totalBalance?.toInt() ?? 0}',
+                isBoldValue: true,
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -187,7 +193,6 @@ class _LoyaltyProgressBar extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 8),
-        // Seviye Metinleri
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

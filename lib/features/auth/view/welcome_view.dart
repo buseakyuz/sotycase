@@ -26,6 +26,7 @@ class WelcomeView extends ConsumerWidget {
                   CustomRectangleButton(
                     text: "Giriş Yap",
                     onTap: () => context.push('/login'),
+                    borderColor: Colors.grey,
                   ),
                   const Spacer(flex: 6),
                 ],

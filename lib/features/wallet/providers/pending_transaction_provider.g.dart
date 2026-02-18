@@ -45,7 +45,7 @@ final class PendingTransactionProvider
 }
 
 String _$pendingTransactionHash() =>
-    r'b36d5abb21a8d3d981174194efbbad7722c31247';
+    r'a4baa910b2e14e670e2e486c81db2d0591d2f5da';
 
 abstract class _$PendingTransaction
     extends $Notifier<List<PendingTransactionModel>> {

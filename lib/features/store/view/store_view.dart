@@ -6,7 +6,6 @@ import 'package:sotycase/features/store/providers/campaign_selection_provider.da
 import 'package:sotycase/features/store/widgets/campaign_card.dart';
 import 'package:sotycase/features/store/widgets/coin_usage_card.dart';
 
-import '../../../../product/constants/soty_colors.dart';
 
 class StoreView extends ConsumerStatefulWidget {
   const StoreView({super.key});
@@ -64,7 +63,20 @@ class _StoreViewState extends ConsumerState<StoreView> {
   }
 
   Widget _buildCampaignList(Set<CampaignModel> selectedCampaigns) {
-    final campaigns = CampaignModel.mockCampaigns;
+    final campaigns = <CampaignModel>[]; // Empty for now until API is ready
+    
+    if (campaigns.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 40),
+          child: Text(
+            'Kullanılabilir kampanya bulunmamaktadır.',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),

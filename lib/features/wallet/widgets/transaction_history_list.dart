@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:sotycase/product/models/wallet/transaction_model.dart';
 import '../../../../product/constants/soty_colors.dart';
-import '../models/transaction_history_model.dart';
 
 class TransactionHistoryList extends StatelessWidget {
   final int selectedIndex;
-  const TransactionHistoryList({super.key, this.selectedIndex = 0});
+  final List<WalletTransactionModel> transactions;
+  
+  const TransactionHistoryList({
+    super.key, 
+    required this.selectedIndex,
+    required this.transactions,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final filteredTransactions =
-        TransactionHistoryModel.mockTransactions.where((t) {
-      if (selectedIndex == 2) return t.amount > 0; // Kazandıklarım
-      if (selectedIndex == 3) return t.amount < 0; // Harcadıklarım
+    final filteredTransactions = transactions.where((t) {
+      if (selectedIndex == 2) return (t.amount ?? 0) > 0; // Kazandıklarım
+      if (selectedIndex == 3) return (t.amount ?? 0) < 0; // Harcadıklarım
       return true; // Tümü
     }).toList();
 
@@ -72,7 +77,7 @@ class _EmptyState extends StatelessWidget {
 }
 
 class _TransactionTile extends StatefulWidget {
-  final TransactionHistoryModel transaction;
+  final WalletTransactionModel transaction;
   final bool isFirst;
   final bool isLast;
 
@@ -91,7 +96,8 @@ class _TransactionTileState extends State<_TransactionTile> {
 
   @override
   Widget build(BuildContext context) {
-    final isPositive = widget.transaction.amount > 0;
+    final amount = widget.transaction.amount ?? 0;
+    final isPositive = amount > 0;
 
     return ClipRRect(
       borderRadius: BorderRadius.vertical(
@@ -113,19 +119,22 @@ class _TransactionTileState extends State<_TransactionTile> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                widget.transaction.icon,
+                _getIconForType(widget.transaction.transactionType),
                 color: SotyColors.gray,
                 size: 24,
               ),
             ),
             title: Row(
               children: [
-                Text(
-                  widget.transaction.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: SotyColors.textPrimary,
+                Expanded(
+                  child: Text(
+                    widget.transaction.title ?? 'İşlem',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: SotyColors.textPrimary,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -137,7 +146,7 @@ class _TransactionTileState extends State<_TransactionTile> {
               ],
             ),
             subtitle: Text(
-              widget.transaction.date,
+              widget.transaction.transactionDate ?? '',
               style: const TextStyle(fontSize: 11, color: SotyColors.gray),
             ),
             trailing: Row(
@@ -148,7 +157,7 @@ class _TransactionTileState extends State<_TransactionTile> {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '${isPositive ? "+" : ""}${widget.transaction.amount}',
+                      '${isPositive ? "+" : ""}${amount.toInt()}',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
@@ -156,13 +165,14 @@ class _TransactionTileState extends State<_TransactionTile> {
                             isPositive ? SotyColors.success : SotyColors.error,
                       ),
                     ),
-                    Text(
-                      'Bakiye: ${widget.transaction.balance}',
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: SotyColors.textSecondary,
+                    if (widget.transaction.orderNo != null)
+                      Text(
+                        'No: ${widget.transaction.orderNo}',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: SotyColors.textSecondary,
+                        ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(width: 8),
@@ -185,7 +195,7 @@ class _TransactionTileState extends State<_TransactionTile> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Divider(color: Colors.grey.shade50),
-                  if (widget.transaction.brand != null) ...[
+                  if (widget.transaction.brandName != null) ...[
                     const Text(
                       'Marka',
                       style: TextStyle(
@@ -196,29 +206,11 @@ class _TransactionTileState extends State<_TransactionTile> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      widget.transaction.brand!,
+                      widget.transaction.brandName!,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
                         color: SotyColors.textPrimary,
-                      ),
-                    ),
-                  ],
-                  if (widget.transaction.description != null) ...[
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.transaction.descriptionTitle ?? 'Detay',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: SotyColors.textPrimary,
-                      ),
-                    ),
-                    Text(
-                      widget.transaction.description!,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: SotyColors.textSecondary,
                       ),
                     ),
                   ],
@@ -233,5 +225,18 @@ class _TransactionTileState extends State<_TransactionTile> {
         ],
       ),
     );
+  }
+
+  IconData _getIconForType(String? type) {
+    switch (type?.toLowerCase()) {
+      case 'shopping':
+        return Icons.shopping_bag_outlined;
+      case 'campaign':
+        return Icons.label_outline;
+      case 'gift':
+        return Icons.card_giftcard_outlined;
+      default:
+        return Icons.monetization_on_outlined;
+    }
   }
 }

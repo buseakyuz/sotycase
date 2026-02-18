@@ -2,7 +2,9 @@ import 'dart:async';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:sotycase/features/auth/providers/auth_state.dart';
-import 'package:sotycase/product/services/auth_provider.dart';
+import 'package:sotycase/features/auth/repository/auth_repository.dart';
+import 'package:sotycase/product/providers/auth/auth_provider.dart';
+import '../models/auth_result.dart';
 
 part 'auth_notifier.g.dart';
 
@@ -31,36 +33,54 @@ class Auth extends _$Auth {
     });
   }
 
-  Future<void> sendCode(String phone) async {
+  Future<bool> sendCode(String phone) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    // Basic validation
-    if (!phone.startsWith('5')) {
+    try {
+      final result = await ref.read(authRepositoryProvider).login(phone);
+      if (result == AuthResult.success || result == AuthResult.otpSent) {
+        state = state.copyWith(isLoading: false, isCodeSent: true, errorMessage: null);
+        _startTimer();
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Kod gönderilemedi.',
+        );
+        return false;
+      }
+    } catch (e) {
       state = state.copyWith(
         isLoading: false,
-        errorMessage: 'Telefon numarası 5xx ile başlamalıdır.',
+        errorMessage: 'Bir hata oluştu.',
       );
-      return;
+      return false;
     }
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
-
-    state = state.copyWith(isLoading: false, isCodeSent: true);
-    _startTimer();
   }
 
-  Future<bool> verifyCode(String code) async {
+  Future<bool> verifyCode(String phone, String code) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
-    await Future.delayed(const Duration(seconds: 1));
-    if (code == '111111') {
-      state = state.copyWith(isLoading: false);
-      _timer?.cancel();
+    
+    try {
+      final result = await ref.read(authRepositoryProvider).verifyOtp(phone, code);
       
-      // Update global authentication state
-      await ref.read(authenticationProvider.notifier).verifyOtp(code);
-
-      return true;
-    } else {
-      state = state.copyWith(isLoading: false, errorMessage: 'Hatalı kod');
+      if (result == AuthResult.success) {
+        state = state.copyWith(isLoading: false);
+        _timer?.cancel();
+        // Update global authentication state
+        await ref.read(authenticationProvider.notifier).verifyOtp(code);
+        return true;
+      } else {
+        state = state.copyWith(
+          isLoading: false,
+          errorMessage: 'Doğrulama kodu hatalı.',
+        );
+        return false;
+      }
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: 'Bir hata oluştu.',
+      );
       return false;
     }
   }

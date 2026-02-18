@@ -146,7 +146,7 @@ class CampaignCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected
               ? SotyColors.primary
-              : const Color(0xFFF4B2C1).withOpacity(0.5),
+              : const Color(0xFFF4B2C1).withValues(alpha: 0.5),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(

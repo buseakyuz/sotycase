@@ -40,10 +40,16 @@ class _LoginViewState extends ConsumerState<LoginView> {
 
     final phone = "90${maskFormatter.getUnmaskedText()}";
 
-    await ref.read(authProvider.notifier).sendCode(phone);
+    final result = await ref.read(authProvider.notifier).sendCode(phone);
 
     if (mounted) {
-      context.push('/otp', extra: phone);
+      if (result == true) {
+        context.push('/otp', extra: phone);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Doğrulama kodu gönderilemedi.')),
+        );
+      }
     }
   }
 
@@ -83,7 +89,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Image.asset("assets/logo/sotylogo.png", height: 200),
+                      Image.asset("assets/logo/sotylogo.png", height: 180),
                       LayoutConstants.centralEmptyHeight,
                       const Text(
                         'Tekrar Hoş Geldiniz',
@@ -170,13 +176,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           ),
                         ),
                       ],
-                      const Spacer(flex: 1),
+                      const Spacer(),
                       LayoutConstants.highEmptyHeight,
                       SizedBox(
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _isButtonActive ? _onContinue : null,
+                          onPressed: (_isButtonActive && !authState.isLoading)
+                              ? _onContinue
+                              : null,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: SotyColors.primary,
                             disabledBackgroundColor: Colors.grey[300],
@@ -186,11 +194,16 @@ class _LoginViewState extends ConsumerState<LoginView> {
                             ),
                           ),
                           child: authState.isLoading
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
+                              ? const SizedBox(
+                                  height: 24,
+                                  width: 24,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
                                 )
                               : Text(
-                                  'Giriş Yap',
+                                  'Kod Gönder', // Adım 1 metni
                                   style: TextStyle(
                                     color: _isButtonActive
                                         ? Colors.white
@@ -201,7 +214,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 ),
                         ),
                       ),
-                      LayoutConstants.maxEmptyHeight,
+                      const SizedBox(height: 20),
                     ],
                   ),
                 ),

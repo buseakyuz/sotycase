@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../models/pending_transaction_model.dart';
+import '../../../product/models/wallet/pending_transaction_model.dart';
 
 part 'pending_transaction_provider.g.dart';
 
@@ -13,7 +13,7 @@ class PendingTransaction extends _$PendingTransaction {
     _startExpiryTimer();
     ref.onDispose(() => _timer?.cancel());
 
-    return PendingTransactionModel.mockPendingTransactions;
+    return [];
   }
 
   void _startExpiryTimer() {
