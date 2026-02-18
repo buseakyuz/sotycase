@@ -13,23 +13,7 @@ class PendingTransaction extends _$PendingTransaction {
     _startExpiryTimer();
     ref.onDispose(() => _timer?.cancel());
 
-    // Mock initial data
-    return [
-      PendingTransactionModel(
-        id: '1',
-        title: 'Online Alışveriş Onayı',
-        amount: 1250.0,
-        expiryDate: DateTime.now().add(const Duration(days: 29, hours: 23, minutes: 59, seconds: 59)),
-        orderNo: 'ORD-123456',
-      ),
-      PendingTransactionModel(
-        id: '2',
-        title: 'Mağaza Alışverişi Beklemede',
-        amount: 450.0,
-        expiryDate: DateTime.now().add(const Duration(minutes: 5)),
-        orderNo: 'ORD-789012',
-      ),
-    ];
+    return PendingTransactionModel.mockPendingTransactions;
   }
 
   void _startExpiryTimer() {

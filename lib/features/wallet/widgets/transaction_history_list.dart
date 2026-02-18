@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../../../../product/constants/soty_colors.dart';
+import '../models/transaction_history_model.dart';
 
 class TransactionHistoryList extends StatelessWidget {
   final int selectedIndex;
@@ -6,7 +8,8 @@ class TransactionHistoryList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filteredTransactions = _mockTransactions.where((t) {
+    final filteredTransactions =
+        TransactionHistoryModel.mockTransactions.where((t) {
       if (selectedIndex == 2) return t.amount > 0; // Kazandıklarım
       if (selectedIndex == 3) return t.amount < 0; // Harcadıklarım
       return true; // Tümü
@@ -61,7 +64,7 @@ class _EmptyState extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 50),
         child: Text(
           'İşlem bulunmamaktadır.',
-          style: TextStyle(color: Color(0xFFA0AEC0)),
+          style: TextStyle(color: SotyColors.gray),
         ),
       ),
     );
@@ -69,7 +72,7 @@ class _EmptyState extends StatelessWidget {
 }
 
 class _TransactionTile extends StatefulWidget {
-  final TransactionModel transaction;
+  final TransactionHistoryModel transaction;
   final bool isFirst;
   final bool isLast;
 
@@ -106,12 +109,12 @@ class _TransactionTileState extends State<_TransactionTile> {
             leading: Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color(0xFFF7F8FA),
+                color: SotyColors.lightGray,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 widget.transaction.icon,
-                color: const Color(0xFFA0AEC0),
+                color: SotyColors.gray,
                 size: 24,
               ),
             ),
@@ -122,7 +125,7 @@ class _TransactionTileState extends State<_TransactionTile> {
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Color(0xFF2D3748),
+                    color: SotyColors.textPrimary,
                   ),
                 ),
                 const SizedBox(width: 4),
@@ -135,7 +138,7 @@ class _TransactionTileState extends State<_TransactionTile> {
             ),
             subtitle: Text(
               widget.transaction.date,
-              style: const TextStyle(fontSize: 11, color: Color(0xFFA0AEC0)),
+              style: const TextStyle(fontSize: 11, color: SotyColors.gray),
             ),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
@@ -149,16 +152,15 @@ class _TransactionTileState extends State<_TransactionTile> {
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 15,
-                        color: isPositive
-                            ? const Color(0xFF48BB78)
-                            : const Color(0xFFF56565),
+                        color:
+                            isPositive ? SotyColors.success : SotyColors.error,
                       ),
                     ),
                     Text(
                       'Bakiye: ${widget.transaction.balance}',
                       style: const TextStyle(
                         fontSize: 10,
-                        color: Color(0xFF718096),
+                        color: SotyColors.textSecondary,
                       ),
                     ),
                   ],
@@ -174,7 +176,6 @@ class _TransactionTileState extends State<_TransactionTile> {
               ],
             ),
           ),
-
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: Container(
@@ -199,7 +200,7 @@ class _TransactionTileState extends State<_TransactionTile> {
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3748),
+                        color: SotyColors.textPrimary,
                       ),
                     ),
                   ],
@@ -210,14 +211,14 @@ class _TransactionTileState extends State<_TransactionTile> {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3748),
+                        color: SotyColors.textPrimary,
                       ),
                     ),
                     Text(
                       widget.transaction.description!,
                       style: const TextStyle(
                         fontSize: 11,
-                        color: Color(0xFF718096),
+                        color: SotyColors.textSecondary,
                       ),
                     ),
                   ],
@@ -234,60 +235,3 @@ class _TransactionTileState extends State<_TransactionTile> {
     );
   }
 }
-
-class TransactionModel {
-  final IconData icon;
-  final String title;
-  final String date;
-  final int amount;
-  final String balance;
-  final String? brand;
-  final String? descriptionTitle;
-  final String? description;
-
-  TransactionModel({
-    required this.icon,
-    required this.title,
-    required this.date,
-    required this.amount,
-    required this.balance,
-    this.brand,
-    this.descriptionTitle,
-    this.description,
-  });
-}
-
-final List<TransactionModel> _mockTransactions = [
-  TransactionModel(
-    icon: Icons.label_outline,
-    title: 'Kampanya',
-    date: 'Bugün 12:15',
-    amount: 500,
-    balance: '50.430',
-    brand: 'Secil Store',
-  ),
-  TransactionModel(
-    icon: Icons.error_outline,
-    title: 'Görev Silindi',
-    date: '16 Nisan 2025 12:32',
-    amount: -500,
-    balance: '50.700',
-    descriptionTitle: 'Yıl Sonu Görevi',
-    description: 'İçerik Oluşturma',
-  ),
-  TransactionModel(
-    icon: Icons.card_giftcard_outlined,
-    title: 'Hediye',
-    date: '16 Nisan 2025 12:32',
-    amount: 1000,
-    balance: '50.700',
-    brand: 'Secil Store',
-  ),
-  TransactionModel(
-    icon: Icons.shopping_bag_outlined,
-    title: 'Alışveriş',
-    date: '21 Nisan 2025 10:40',
-    amount: -600,
-    balance: '49.780',
-  ),
-];

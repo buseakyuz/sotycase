@@ -10,8 +10,24 @@ final class SotyColors {
   /// The primary text color.
   static const Color textPrimary = Color(0xFF1F1F39);
 
-  // You can add other colors like this:
-  // static const Color textSecondary = Color(0xFF6B6B8D);
-  // static const Color background = Color(0xFFF5F5F5);
-  // static const Color error = Color(0xFFD32F2F);
+  /// Secondary text color.
+  static const Color textSecondary = Color(0xFF718096);
+
+  /// Light gray for backgrounds and borders.
+  static const Color lightGray = Color(0xFFF7F8FA);
+
+  /// Gray for secondary icons and hints.
+  static const Color gray = Color(0xFFA0AEC0);
+
+  /// Success color (green).
+  static const Color success = Color(0xFF48BB78);
+
+  /// Error color (red).
+  static const Color error = Color(0xFFF56565);
+
+  /// Warning color (orange/amber).
+  static const Color warning = Color(0xFFED8936);
+
+  /// Background color.
+  static const Color background = Color(0xFFF8F9FB);
 }

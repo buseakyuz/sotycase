@@ -58,7 +58,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: SotyColors.textPrimary),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -90,6 +90,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          color: SotyColors.textPrimary,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -97,20 +98,18 @@ class _LoginViewState extends ConsumerState<LoginView> {
                         'Lütfen telefon numaranız ile giriş yapınız',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: SotyColors.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
-
                       const SizedBox(height: 32),
-
                       Row(
                         children: [
                           Container(
                             height: 56,
                             width: 70,
                             decoration: BoxDecoration(
-                              color: const Color(0xFFF3F4F6),
+                              color: SotyColors.lightGray,
                               borderRadius: BorderRadius.circular(12),
                             ),
                             alignment: Alignment.center,
@@ -119,7 +118,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.grey,
+                                color: SotyColors.textSecondary,
                               ),
                             ),
                           ),
@@ -131,10 +130,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 horizontal: 16,
                               ),
                               decoration: BoxDecoration(
-                                color: const Color(0xFFF3F4F6),
+                                color: SotyColors.lightGray,
                                 borderRadius: BorderRadius.circular(12),
                                 border: errorMessage != null
-                                    ? Border.all(color: Colors.red)
+                                    ? Border.all(color: SotyColors.error)
                                     : null,
                               ),
                               alignment: Alignment.centerLeft,
@@ -146,7 +145,7 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 style: const TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black,
+                                  color: SotyColors.textPrimary,
                                 ),
                                 decoration: const InputDecoration(
                                   border: InputBorder.none,
@@ -157,7 +156,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           ),
                         ],
                       ),
-
                       if (errorMessage != null) ...[
                         const SizedBox(height: 8),
                         Padding(
@@ -165,17 +163,15 @@ class _LoginViewState extends ConsumerState<LoginView> {
                           child: Text(
                             errorMessage,
                             style: const TextStyle(
-                              color: Colors.red,
+                              color: SotyColors.error,
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
                       ],
-
                       const Spacer(flex: 1),
                       LayoutConstants.highEmptyHeight,
-
                       SizedBox(
                         width: double.infinity,
                         height: 56,
@@ -205,7 +201,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                                 ),
                         ),
                       ),
-
                       LayoutConstants.maxEmptyHeight,
                     ],
                   ),

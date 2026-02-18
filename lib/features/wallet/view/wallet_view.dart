@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sotycase/product/constants/soty_colors.dart';
 import '../widgets/wallet_app_bar.dart';
 import '../widgets/loyalty_card_stack.dart';
 import '../widgets/quick_action_buttons.dart';
@@ -20,7 +21,6 @@ class _WalletViewState extends State<WalletView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F8F8),
       appBar: const WalletAppBar(),
       body: SingleChildScrollView(
         child: Column(

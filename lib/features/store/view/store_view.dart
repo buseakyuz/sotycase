@@ -16,42 +16,15 @@ class StoreView extends ConsumerStatefulWidget {
 }
 
 class _StoreViewState extends ConsumerState<StoreView> {
-  final List<CampaignModel> _mockCampaigns = [
-    CampaignModel(
-      id: "1",
-      brandName: "Secil Store",
-      title: "Bahar Coşkusuyla Coin Katlama",
-      description:
-          "Baharı enerjisini alışverişlerine taşı! Şimdi alışveriş yaptıkça kazandığın Soty Coin'ler tam 3 katı değerinde hesabına yansıyor.",
-      expiryDate: "01 Temmuz",
-      isCombinable: false,
-    ),
-    CampaignModel(
-      id: "2",
-      brandName: "Secil Store",
-      title: "Tüm Ürünlerde %20 İndirim",
-      description:
-          "Tüm ürünlerde geçerli %20 indirim fırsatıyla favori ürünlerinizi şimdi daha avantajlı fiyatlarla alın. Kampanya sınırlı süreyle geçerli!",
-      expiryDate: "02 Eylül",
-      isCombinable: true,
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
     final selectedCampaigns = ref.watch(campaignSelectionProvider);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios_new,
-            color: Colors.black,
-            size: 20,
-          ),
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () {
             if (context.canPop()) {
               context.pop();
@@ -60,25 +33,17 @@ class _StoreViewState extends ConsumerState<StoreView> {
             }
           },
         ),
-        title: const Text(
-          'Mağaza Alışverişi',
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 16,
-          ),
-        ),
+        title: const Text('Mağaza Alışverişi'),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.qr_code_scanner, color: Colors.black),
+            icon: const Icon(Icons.qr_code_scanner),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.notifications_none, color: Colors.black),
+            icon: const Icon(Icons.notifications_none),
           ),
         ],
-        centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -92,20 +57,21 @@ class _StoreViewState extends ConsumerState<StoreView> {
               ],
             ),
           ),
-          _buildStickyButton(selectedCampaigns),
+          _buildStickyButton(selectedCampaigns, textTheme),
         ],
       ),
     );
   }
 
   Widget _buildCampaignList(Set<CampaignModel> selectedCampaigns) {
+    final campaigns = CampaignModel.mockCampaigns;
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      itemCount: _mockCampaigns.length,
+      itemCount: campaigns.length,
       itemBuilder: (context, index) {
-        final campaign = _mockCampaigns[index];
+        final campaign = campaigns[index];
         final isSelected = selectedCampaigns.contains(campaign);
 
         return Padding(
@@ -192,7 +158,7 @@ class _StoreViewState extends ConsumerState<StoreView> {
     );
   }
 
-  Widget _buildStickyButton(Set<CampaignModel> selectedCampaigns) {
+  Widget _buildStickyButton(Set<CampaignModel> selectedCampaigns, TextTheme textTheme) {
     final bool hasSelection = selectedCampaigns.isNotEmpty;
     return Positioned(
       bottom: 20,
@@ -206,26 +172,14 @@ class _StoreViewState extends ConsumerState<StoreView> {
                   context.push("/payment");
                 }
               : null,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: SotyColors.primary,
-            disabledBackgroundColor: const Color(0xFFD1D5DB),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            elevation: 0,
-          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.qr_code_2, color: Colors.white),
+              const Icon(Icons.qr_code_2),
               const SizedBox(width: 8),
               Text(
                 hasSelection ? 'QR Kod Oluştur' : 'Kampanyaları Seç',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
+                style: textTheme.labelLarge,
               ),
             ],
           ),

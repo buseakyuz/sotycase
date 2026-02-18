@@ -41,14 +41,14 @@ class CoinUsageCard extends ConsumerWidget {
                   ),
                   Text(
                     'Toplam Bakiye: $totalBalance',
-                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                    style: const TextStyle(color: SotyColors.textSecondary, fontSize: 12),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
               const Text(
                 'Kullanmak istediğiniz toplam Soty Coin miktarının yüzdesini seçiniz.',
-                style: TextStyle(color: Colors.grey, fontSize: 11),
+                style: TextStyle(color: SotyColors.textSecondary, fontSize: 11),
               ),
               const SizedBox(height: 16),
               Row(
@@ -59,7 +59,7 @@ class CoinUsageCard extends ConsumerWidget {
                       height: 44,
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF9FAFB),
+                        color: SotyColors.lightGray,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.grey.shade200),
                       ),
@@ -70,8 +70,8 @@ class CoinUsageCard extends ConsumerWidget {
                             : 'Miktar Giriniz',
                         style: TextStyle(
                           color: currentUsedAmount > 0
-                              ? Colors.black
-                              : Colors.grey,
+                              ? SotyColors.textPrimary
+                              : SotyColors.gray,
                           fontSize: 13,
                         ),
                       ),
@@ -109,7 +109,7 @@ class CoinUsageCard extends ConsumerWidget {
         height: 44,
         padding: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: isSelected ? SotyColors.primary : const Color(0xFFF9FAFB),
+          color: isSelected ? SotyColors.primary : SotyColors.lightGray,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
             color: isSelected ? SotyColors.primary : Colors.grey.shade200,
@@ -121,7 +121,7 @@ class CoinUsageCard extends ConsumerWidget {
           style: TextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w500,
-            color: isSelected ? Colors.white : Colors.black,
+            color: isSelected ? Colors.white : SotyColors.textPrimary,
           ),
         ),
       ),

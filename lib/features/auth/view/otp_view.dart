@@ -54,14 +54,19 @@ class _OtpViewState extends ConsumerState<OtpView> {
         '00:${authState.remainingTime.toString().padLeft(2, '0')}';
 
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(color: SotyColors.textPrimary)),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const BackButton(color: SotyColors.textPrimary),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 40),
-            Text(
+            const Text(
               'Doğrulama Kodunu Girin',
               style: TextStyle(
                 color: SotyColors.textPrimary,
@@ -73,7 +78,7 @@ class _OtpViewState extends ConsumerState<OtpView> {
             Text(
               '${widget.phone} numaralı telefona gönderilen 6 haneli kodu girin.',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+              style: TextStyle(color: SotyColors.textSecondary, fontSize: 16),
             ),
             const SizedBox(height: 40),
             Pinput(
@@ -86,18 +91,21 @@ class _OtpViewState extends ConsumerState<OtpView> {
                 textStyle: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
+                  color: SotyColors.textPrimary,
                 ),
                 decoration: BoxDecoration(
+                  color: SotyColors.lightGray,
                   border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
               focusedPinTheme: PinTheme(
                 width: 50,
                 height: 55,
                 decoration: BoxDecoration(
-                  border: Border.all(color: SotyColors.primary),
-                  borderRadius: BorderRadius.circular(8),
+                  color: SotyColors.lightGray,
+                  border: Border.all(color: SotyColors.primary, width: 2),
+                  borderRadius: BorderRadius.circular(12),
                 ),
               ),
             ),
@@ -105,20 +113,27 @@ class _OtpViewState extends ConsumerState<OtpView> {
             if (authState.remainingTime > 0)
               Text(
                 'Kalan Süre: $formattedTime',
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: SotyColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
               )
             else
               TextButton(
                 onPressed: authNotifier.resendCode,
                 child: const Text(
                   'Tekrar Gönder',
-                  style: TextStyle(color: SotyColors.primary),
+                  style: TextStyle(
+                    color: SotyColors.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             const Spacer(),
             SizedBox(
               width: double.infinity,
-              height: 50,
+              height: 56,
               child: ElevatedButton(
                 onPressed: _isButtonEnabled && !authState.isLoading
                     ? () async {
@@ -132,7 +147,8 @@ class _OtpViewState extends ConsumerState<OtpView> {
                     : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: SotyColors.primary,
-                  disabledBackgroundColor: Colors.grey,
+                  disabledBackgroundColor: Colors.grey[300],
+                  elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),

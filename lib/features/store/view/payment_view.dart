@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:sotycase/features/store/providers/coin_usage_provider.dart';
@@ -19,7 +20,7 @@ class _PaymentViewState extends ConsumerState<PaymentView>
   late TabController _tabController;
   late Timer _timer;
   int _remainingSeconds = 60;
-  String _currentCode = "165 845"; // Mock dinamik kod
+  String _currentCode = "165 845";
 
   @override
   void initState() {
@@ -41,7 +42,6 @@ class _PaymentViewState extends ConsumerState<PaymentView>
   void _refreshCode() {
     setState(() {
       _remainingSeconds = 60;
-      // Gerçek senaryoda burada API'den yeni kod istenir
       _currentCode = (100000 + (900000 * (DateTime.now().millisecond / 1000)))
           .toInt()
           .toString();
@@ -59,39 +59,30 @@ class _PaymentViewState extends ConsumerState<PaymentView>
   Widget build(BuildContext context) {
     final selectedCampaigns = ref.watch(campaignSelectionProvider);
     final usedCoinAmount = ref.watch(coinUsageProvider);
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F9FB),
       appBar: AppBar(
-        title: const Text(
-          'Mağaza Alışverişi',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-          ),
+        title: const Text('Mağaza Alışverişi'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/wallet');
+            }
+          },
         ),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: const BackButton(color: Colors.black),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // 1. QR / Barkod Tab Bar
             _buildCustomTabBar(),
-
-            // 2. Coin Bilgi Kartı
-            _buildCoinInfoCard(usedCoinAmount),
-
-            // 3. QR/Barkod Alanı
-            _buildCodeDisplayArea(),
-
-            // 4. Kullanılan Kampanyalar Özeti
+            _buildCoinInfoCard(usedCoinAmount, textTheme),
+            _buildCodeDisplayArea(textTheme),
             if (selectedCampaigns.isNotEmpty)
-              _buildCampaignSummary(selectedCampaigns.toList()),
-
+              _buildCampaignSummary(selectedCampaigns.toList(), textTheme),
             const SizedBox(height: 30),
           ],
         ),
@@ -114,7 +105,7 @@ class _PaymentViewState extends ConsumerState<PaymentView>
           borderRadius: BorderRadius.circular(25),
         ),
         labelColor: SotyColors.primary,
-        unselectedLabelColor: Colors.grey,
+        unselectedLabelColor: SotyColors.textSecondary,
         tabs: const [
           Tab(text: 'QR'),
           Tab(text: 'Barkod'),
@@ -123,14 +114,14 @@ class _PaymentViewState extends ConsumerState<PaymentView>
     );
   }
 
-  Widget _buildCoinInfoCard(double amount) {
+  Widget _buildCoinInfoCard(double amount, TextTheme textTheme) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFFFFF5F7),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: SotyColors.primary.withOpacity(0.2)),
+        border: Border.all(color: SotyColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         children: [
@@ -145,23 +136,23 @@ class _PaymentViewState extends ConsumerState<PaymentView>
               const SizedBox(width: 8),
               Text(
                 '${amount.toInt()}',
-                style: const TextStyle(
-                  fontSize: 20,
+                style: textTheme.displaySmall?.copyWith(
+                  color: SotyColors.textPrimary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ],
           ),
-          const Text(
+          Text(
             'Soty Coin Kullanılacaktır.',
-            style: TextStyle(fontSize: 12, color: Colors.grey),
+            style: textTheme.bodySmall,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildCodeDisplayArea() {
+  Widget _buildCodeDisplayArea(TextTheme textTheme) {
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
@@ -175,7 +166,7 @@ class _PaymentViewState extends ConsumerState<PaymentView>
             _remainingSeconds > 0
                 ? "QR kod $_remainingSeconds saniye sonra yenilenecektir"
                 : "Yenileniyor...",
-            style: const TextStyle(fontSize: 11, color: Colors.grey),
+            style: textTheme.bodySmall,
           ),
           const SizedBox(height: 15),
           SizedBox(
@@ -183,80 +174,85 @@ class _PaymentViewState extends ConsumerState<PaymentView>
             child: TabBarView(
               controller: _tabController,
               children: [
-                QrImageView(data: _currentCode, size: 200),
-                BarcodeWidget(
-                  barcode: Barcode.code128(),
-                  data: _currentCode,
-                  width: 200,
-                  height: 100,
+                Center(child: QrImageView(data: _currentCode, size: 200)),
+                Center(
+                  child: BarcodeWidget(
+                    barcode: Barcode.code128(),
+                    data: _currentCode,
+                    width: 200,
+                    height: 100,
+                  ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 20),
-          _buildCodeNumberArea(),
+          _buildCodeNumberArea(textTheme),
         ],
       ),
     );
   }
 
-  Widget _buildCodeNumberArea() {
+  Widget _buildCodeNumberArea(TextTheme textTheme) {
     return Row(
       children: [
         Expanded(
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFF7F8FA),
+              color: SotyColors.lightGray,
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
               _currentCode,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+              style: textTheme.headlineMedium?.copyWith(
                 letterSpacing: 2,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ),
         ),
         const SizedBox(width: 10),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: SotyColors.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(12),
+        InkWell(
+          onTap: () {}, // Copy functionality
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: SotyColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(Icons.copy, color: SotyColors.primary),
           ),
-          child: const Icon(Icons.copy, color: SotyColors.primary),
         ),
       ],
     );
   }
 
-  Widget _buildCampaignSummary(List campaigns) {
+  Widget _buildCampaignSummary(List campaigns, TextTheme textTheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Center(
+          Center(
             child: Text(
               "Kullanılan Kampanyalar",
-              style: TextStyle(
+              style: textTheme.titleMedium?.copyWith(
                 color: SotyColors.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
           const SizedBox(height: 15),
-          ...campaigns.map((c) => _buildMiniCampaignCard(c)).toList(),
+          ...campaigns.map((c) => _buildMiniCampaignCard(c, textTheme)),
         ],
       ),
     );
   }
 
-  Widget _buildMiniCampaignCard(dynamic c) {
+  Widget _buildMiniCampaignCard(dynamic c, TextTheme textTheme) {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(12),
@@ -273,16 +269,15 @@ class _PaymentViewState extends ConsumerState<PaymentView>
               children: [
                 Text(
                   c.title,
-                  style: const TextStyle(
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    fontSize: 13,
                   ),
                 ),
                 Text(
                   c.description,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 10, color: Colors.grey),
+                  style: textTheme.bodySmall,
                 ),
               ],
             ),

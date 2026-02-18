@@ -5,6 +5,7 @@ import 'package:sotycase/features/auth/view/login_view.dart';
 import 'package:sotycase/features/auth/view/otp_view.dart';
 import 'package:sotycase/features/auth/view/welcome_view.dart';
 import 'package:sotycase/features/base/view/base_view.dart';
+import 'package:sotycase/features/store/view/payment_view.dart';
 import 'package:sotycase/features/store/view/store_view.dart';
 import '../services/auth_provider.dart';
 
@@ -41,6 +42,7 @@ GoRouter router(Ref ref) {
       GoRoute(path: '/otp', builder: (context, state) => const OtpView()),
       GoRoute(path: '/wallet', builder: (context, state) => const BaseView()),
       GoRoute(path: '/store', builder: (context, state) => const StoreView()),
+      GoRoute(path: '/payment', builder: (context, state) => const PaymentView()),
     ],
   );
 }

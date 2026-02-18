@@ -64,7 +64,7 @@ class _OnlineApprovalInfo extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: const Color(0xFFF7F8FA),
+        color: SotyColors.lightGray,
         border: Border(
           bottom: BorderSide(color: Colors.grey.shade200, width: 0.5),
         ),
@@ -73,7 +73,7 @@ class _OnlineApprovalInfo extends StatelessWidget {
         children: [
           const Text(
             'Online Sepet Onaylama Süresi',
-            style: TextStyle(fontSize: 13, color: Color(0xFF718096)),
+            style: TextStyle(fontSize: 13, color: SotyColors.textSecondary),
           ),
           const SizedBox(height: 4),
           Row(
@@ -129,27 +129,26 @@ class _PendingTransactionTileState extends State<_PendingTransactionTile> {
           leading: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: const Color(0xFFF7F8FA),
+              color: SotyColors.lightGray,
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(
               Icons.shopping_cart_outlined,
-              color: Color(0xFFA0AEC0),
+              color: SotyColors.gray,
               size: 24,
             ),
           ),
           title: Row(
             children: [
-              // ÇÖZÜM: Flexible veya Expanded kullanarak metnin taşmasını önle
               Flexible(
                 child: Text(
                   widget.transaction.title,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
-                    color: Color(0xFF2D3748),
+                    color: SotyColors.textPrimary,
                   ),
-                  overflow: TextOverflow.ellipsis, // Çok uzunsa '...' koyar
+                  overflow: TextOverflow.ellipsis,
                   maxLines: 1,
                 ),
               ),
@@ -173,14 +172,14 @@ class _PendingTransactionTileState extends State<_PendingTransactionTile> {
           ),
           trailing: Row(
             mainAxisSize:
-                MainAxisSize.min, // Sağ tarafın genişliğini minimize et
+                MainAxisSize.min,
             children: [
               Text(
                 '+${widget.transaction.amount.toInt()}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Color(0xFFED8936),
+                  color: SotyColors.warning,
                 ),
               ),
               const SizedBox(width: 8),
@@ -227,7 +226,7 @@ class _PendingTransactionTileState extends State<_PendingTransactionTile> {
                 style: const TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3748),
+                  color: SotyColors.textPrimary,
                 ),
               ),
               if (subTitle != null)
@@ -235,7 +234,7 @@ class _PendingTransactionTileState extends State<_PendingTransactionTile> {
                   subTitle,
                   style: const TextStyle(
                     fontSize: 10,
-                    color: Color(0xFFA0AEC0),
+                    color: SotyColors.gray,
                   ),
                 ),
             ],
@@ -245,7 +244,7 @@ class _PendingTransactionTileState extends State<_PendingTransactionTile> {
             style: const TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.bold,
-              color: Color(0xFFED8936),
+              color: SotyColors.warning,
             ),
           ),
         ],
@@ -287,7 +286,7 @@ class _CountdownTimerState extends State<_CountdownTimer> {
         "${widget.expiryDate.day}.${widget.expiryDate.month < 10 ? '0' : ''}${widget.expiryDate.month}.${widget.expiryDate.year}";
     return Text(
       'Tahmini Kalan Gün $dateStr',
-      style: const TextStyle(fontSize: 11, color: Color(0xFFA0AEC0)),
+      style: const TextStyle(fontSize: 11, color: SotyColors.gray),
     );
   }
 }
@@ -302,7 +301,7 @@ class _EmptyState extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 50),
         child: Text(
           'Bekleyen işleminiz bulunmamaktadır.',
-          style: TextStyle(color: Color(0xFFA0AEC0)),
+          style: TextStyle(color: SotyColors.gray),
         ),
       ),
     );
